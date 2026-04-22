@@ -1,5 +1,6 @@
 import type { Song, SearchProvider } from '@/types';
 
+// ─── Cache ──────────────────────────────────────────────────────────────────
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
 interface CachedResult {
@@ -14,11 +15,12 @@ function getCacheKey(query: string): string {
 
 function getCachedResult(query: string): Song[] | null {
   try {
-    const cached = localStorage.getItem(getCacheKey(query));
+    const key = getCacheKey(query);
+    const cached = localStorage.getItem(key);
     if (!cached) return null;
     const parsed: CachedResult = JSON.parse(cached);
     if (Date.now() - parsed.timestamp > CACHE_DURATION) {
-      localStorage.removeItem(getCacheKey(query));
+      localStorage.removeItem(key);
       return null;
     }
     return parsed.data;
@@ -29,29 +31,75 @@ function getCachedResult(query: string): Song[] | null {
 
 function cacheResult(query: string, songs: Song[], provider: string): void {
   try {
-    const entry: CachedResult = { data: songs, timestamp: Date.now(), provider };
-    localStorage.setItem(getCacheKey(query), JSON.stringify(entry));
+    localStorage.setItem(
+      getCacheKey(query),
+      JSON.stringify({ data: songs, timestamp: Date.now(), provider }),
+    );
   } catch {
-    // Ignore storage errors
+    // storage full
   }
 }
 
-async function fetchWithTimeout(url: string, timeout = 10000): Promise<Response> {
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), timeout);
+// ─── Instance Health Tracker ────────────────────────────────────────────────
+const HEALTH_KEY = 'music_instance_health';
+
+interface HealthScore {
+  piped: Record<string, number>;
+  invidious: Record<string, number>;
+}
+
+function getHealth(): HealthScore {
+  try {
+    const raw = localStorage.getItem(HEALTH_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return { piped: {}, invidious: {} };
+}
+
+function saveHealth(h: HealthScore): void {
+  try {
+    localStorage.setItem(HEALTH_KEY, JSON.stringify(h));
+  } catch {}
+}
+
+function recordSuccess(type: 'piped' | 'invidious', base: string): void {
+  const h = getHealth();
+  if (!h[type]) h[type] = {};
+  h[type][base] = (h[type][base] || 0) + 1;
+  saveHealth(h);
+}
+
+function recordFail(type: 'piped' | 'invidious', base: string): void {
+  const h = getHealth();
+  if (!h[type]) h[type] = {};
+  h[type][base] = Math.max((h[type][base] || 0) - 1, -5);
+  saveHealth(h);
+}
+
+function sortInstancesByHealth(instances: string[], type: 'piped' | 'invidious'): string[] {
+  const h = getHealth();
+  const scores = h[type] || {};
+  return [...instances].sort((a, b) => (scores[b] || 0) - (scores[a] || 0));
+}
+
+// ─── Network ────────────────────────────────────────────────────────────────
+async function fetchWithTimeout(url: string, timeout = 6000): Promise<Response> {
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), timeout);
   try {
     const res = await fetch(url, {
-      signal: controller.signal,
+      signal: ac.signal,
       headers: { Accept: 'application/json' },
     });
-    clearTimeout(id);
+    clearTimeout(timer);
     return res;
   } catch (e) {
-    clearTimeout(id);
+    clearTimeout(timer);
     throw e;
   }
 }
 
+// ─── Helpers ────────────────────────────────────────────────────────────────
 function formatDuration(seconds: number | string): string {
   if (!seconds) return '0:00';
   const n = typeof seconds === 'string' ? parseInt(seconds, 10) : Math.floor(seconds);
@@ -59,118 +107,216 @@ function formatDuration(seconds: number | string): string {
   return `${Math.floor(n / 60)}:${String(n % 60).padStart(2, '0')}`;
 }
 
+const ENT_MAP: Record<string, string> = {
+  '&amp;': '&',
+  '&lt;': '<',
+  '&gt;': '>',
+  '&quot;': '"',
+  '&#39;': "'",
+};
+const ENT_RE = /&(?:amp|lt|gt|quot|#39);/g;
+
 function cleanTitle(raw: string): string {
-  return (raw || 'Unknown')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .trim();
+  return (raw || 'Unknown').replace(ENT_RE, (m) => ENT_MAP[m] || m).trim();
 }
 
-// ─── Piped ────────────────────────────────────────────────────────────────────
+function extractVideoId(item: { id?: string; url?: string }): string {
+  let vid = item.id || '';
+  if (!vid && item.url) {
+    const m = item.url.match(/[?&]v=([^&]+)/) || item.url.match(/\/([a-zA-Z0-9_-]{11})$/);
+    vid = m ? m[1] : '';
+  }
+  return vid.replace(/^\/watch\?v=/, '').trim();
+}
+
+// ─── Parallel Race Helper ───────────────────────────────────────────────────
+// Runs multiple async tasks, returns first successful non-empty result
+function raceFirst<T>(
+  tasks: Promise<T>[],
+  isValid: (r: T) => boolean,
+): Promise<T | null> {
+  return new Promise((resolve) => {
+    if (tasks.length === 0) { resolve(null); return; }
+    let done = false;
+    let pending = tasks.length;
+
+    for (const task of tasks) {
+      task
+        .then((result) => {
+          if (!done) {
+            if (isValid(result)) {
+              done = true;
+              resolve(result);
+            } else {
+              pending--;
+              if (pending === 0) resolve(null);
+            }
+          }
+        })
+        .catch(() => {
+          if (!done) {
+            pending--;
+            if (pending === 0) resolve(null);
+          }
+        });
+    }
+  });
+}
+
+// ─── Piped ──────────────────────────────────────────────────────────────────
 const PIPED_INSTANCES = [
   'https://pipedapi.adminforge.de',
+  'https://pipedapi.kavin.rocks',
+  'https://pipedapi.r4fo.com',
+  'https://api.piped.yt',
   'https://pipedapi.astre.me',
   'https://pipedapi.projectsegfau.lt',
-  'https://pipedapi.rivo.world',
-  'https://pipedapi.mosesm.org',
   'https://piped-api.garudalinux.org',
-  'https://pipedapi.kavin.rocks',
+  'https://pipedapi.mosesm.org',
+  'https://pipedapi.rivo.world',
 ];
+
+async function tryPiped(base: string, encoded: string): Promise<Song[]> {
+  try {
+    const res = await fetchWithTimeout(`${base}/search?q=${encoded}&filter=videos`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (!Array.isArray(data?.items) || data.items.length === 0) return [];
+
+    const songs: Song[] = data.items
+      .filter((i: any) => i.url || i.id)
+      .slice(0, 20)
+      .map((i: any): Song => {
+        const videoId = extractVideoId(i);
+        return {
+          videoId,
+          title: cleanTitle(i.title),
+          artist: cleanTitle(i.uploaderName || i.uploader || 'Unknown Artist'),
+          thumbnail: i.thumbnail || `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`,
+          duration: i.duration ? formatDuration(i.duration) : '0:00',
+          durationSeconds: typeof i.duration === 'number' ? Math.floor(i.duration) : 0,
+        };
+      })
+      .filter((s: Song) => s.videoId && s.videoId.length >= 8);
+
+    if (songs.length > 0) {
+      recordSuccess('piped', base);
+      console.log(`[Piped] ✓ ${songs.length} from ${base}`);
+    }
+    return songs;
+  } catch {
+    recordFail('piped', base);
+    console.warn(`[Piped] ✗ ${base}`);
+    return [];
+  }
+}
 
 async function searchPiped(query: string): Promise<Song[]> {
-  for (const base of PIPED_INSTANCES) {
-    try {
-      const url = `${base}/search?q=${encodeURIComponent(query)}&filter=videos`;
-      const res = await fetchWithTimeout(url, 10000);
-      if (!res.ok) continue;
-      const data = await res.json();
-      if (!Array.isArray(data?.items) || data.items.length === 0) continue;
+  const encoded = encodeURIComponent(query);
+  const sorted = sortInstancesByHealth(PIPED_INSTANCES, 'piped');
 
-      const songs: Song[] = data.items
-        .filter((i: any) => i.url || i.id)
-        .slice(0, 20)
-        .map((i: any): Song => {
-          let videoId = i.id || '';
-          if (!videoId && i.url) {
-            const m = i.url.match(/[?&]v=([^&]+)/) || i.url.match(/\/([a-zA-Z0-9_-]{11})$/);
-            videoId = m ? m[1] : '';
-          }
-          videoId = videoId.replace(/^\/watch\?v=/, '').trim();
-          return {
-            videoId,
-            title: cleanTitle(i.title),
-            artist: cleanTitle(i.uploaderName || i.uploader || 'Unknown Artist'),
-            thumbnail: i.thumbnail || `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`,
-            duration: i.duration ? formatDuration(i.duration) : '0:00',
-            durationSeconds: typeof i.duration === 'number' ? Math.floor(i.duration) : 0,
-          };
-        })
-        .filter((s: Song) => s.videoId && s.videoId.length >= 8);
+  // Batch 1: race top 3 (health-sorted) in parallel
+  const batch1 = await raceFirst(
+    sorted.slice(0, 3).map((b) => tryPiped(b, encoded)),
+    (r): r is Song[] => Array.isArray(r) && r.length > 0,
+  );
+  if (batch1) return batch1;
 
-      if (songs.length > 0) {
-        console.log(`[Piped] ✓ ${songs.length} results from ${base}`);
-        return songs;
-      }
-    } catch (e) {
-      console.warn(`[Piped] ${base} failed:`, e);
-    }
+  // Batch 2: race next 3
+  const batch2 = await raceFirst(
+    sorted.slice(3, 6).map((b) => tryPiped(b, encoded)),
+    (r): r is Song[] => Array.isArray(r) && r.length > 0,
+  );
+  if (batch2) return batch2;
+
+  // Batch 3: remaining sequentially (last resort)
+  for (const base of sorted.slice(6)) {
+    const songs = await tryPiped(base, encoded);
+    if (songs.length > 0) return songs;
   }
+
   return [];
 }
 
-// ─── Invidious ────────────────────────────────────────────────────────────────
+// ─── Invidious ──────────────────────────────────────────────────────────────
 const INVIDIOUS_INSTANCES = [
-  'https://invidious.projectsegfau.lt',
-  'https://inv.vern.cc',
+  'https://inv.nadeko.net',
   'https://invidious.nerdvpn.de',
   'https://iv.melmac.space',
-  'https://invidious.slipfox.xyz',
   'https://iv.ggtyler.dev',
-  'https://inv.nadeko.net',
+  'https://invidious.projectsegfau.lt',
+  'https://inv.vern.cc',
+  'https://invidious.privacyredirect.com',
+  'https://invidious.slipfox.xyz',
 ];
 
-async function searchInvidious(query: string): Promise<Song[]> {
-  for (const base of INVIDIOUS_INSTANCES) {
-    try {
-      const url = `${base}/api/v1/search?q=${encodeURIComponent(query)}&type=video&fields=videoId,title,author,lengthSeconds,videoThumbnails`;
-      const res = await fetchWithTimeout(url, 10000);
-      if (!res.ok) continue;
-      const data = await res.json();
-      if (!Array.isArray(data) || data.length === 0) continue;
+async function tryInvidious(base: string, encoded: string): Promise<Song[]> {
+  try {
+    const res = await fetchWithTimeout(
+      `${base}/api/v1/search?q=${encoded}&type=video&fields=videoId,title,author,lengthSeconds,videoThumbnails`,
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (!Array.isArray(data) || data.length === 0) return [];
 
-      const songs: Song[] = data
-        .filter((i: any) => i.videoId && i.title)
-        .slice(0, 20)
-        .map((i: any): Song => {
-          const thumb =
-            i.videoThumbnails?.find((t: any) => t.quality === 'medium')?.url ||
-            i.videoThumbnails?.[0]?.url ||
-            `https://i.ytimg.com/vi/${i.videoId}/mqdefault.jpg`;
-          return {
-            videoId: i.videoId,
-            title: cleanTitle(i.title),
-            artist: cleanTitle(i.author || 'Unknown Artist'),
-            thumbnail: thumb.startsWith('//') ? `https:${thumb}` : thumb,
-            duration: i.lengthSeconds ? formatDuration(i.lengthSeconds) : '0:00',
-            durationSeconds: i.lengthSeconds || 0,
-          };
-        });
+    const songs: Song[] = data
+      .filter((i: any) => i.videoId && i.title)
+      .slice(0, 20)
+      .map((i: any): Song => {
+        const thumb =
+          i.videoThumbnails?.find((t: any) => t.quality === 'medium')?.url ||
+          i.videoThumbnails?.[0]?.url ||
+          `https://i.ytimg.com/vi/${i.videoId}/mqdefault.jpg`;
+        return {
+          videoId: i.videoId,
+          title: cleanTitle(i.title),
+          artist: cleanTitle(i.author || 'Unknown Artist'),
+          thumbnail: thumb.startsWith('//') ? `https:${thumb}` : thumb,
+          duration: i.lengthSeconds ? formatDuration(i.lengthSeconds) : '0:00',
+          durationSeconds: i.lengthSeconds || 0,
+        };
+      });
 
-      if (songs.length > 0) {
-        console.log(`[Invidious] ✓ ${songs.length} results from ${base}`);
-        return songs;
-      }
-    } catch (e) {
-      console.warn(`[Invidious] ${base} failed:`, e);
+    if (songs.length > 0) {
+      recordSuccess('invidious', base);
+      console.log(`[Invidious] ✓ ${songs.length} from ${base}`);
     }
+    return songs;
+  } catch {
+    recordFail('invidious', base);
+    console.warn(`[Invidious] ✗ ${base}`);
+    return [];
   }
+}
+
+async function searchInvidious(query: string): Promise<Song[]> {
+  const encoded = encodeURIComponent(query);
+  const sorted = sortInstancesByHealth(INVIDIOUS_INSTANCES, 'invidious');
+
+  // Batch 1: race top 3
+  const batch1 = await raceFirst(
+    sorted.slice(0, 3).map((b) => tryInvidious(b, encoded)),
+    (r): r is Song[] => Array.isArray(r) && r.length > 0,
+  );
+  if (batch1) return batch1;
+
+  // Batch 2: race next 3
+  const batch2 = await raceFirst(
+    sorted.slice(3, 6).map((b) => tryInvidious(b, encoded)),
+    (r): r is Song[] => Array.isArray(r) && r.length > 0,
+  );
+  if (batch2) return batch2;
+
+  // Batch 3: remaining
+  for (const base of sorted.slice(6)) {
+    const songs = await tryInvidious(base, encoded);
+    if (songs.length > 0) return songs;
+  }
+
   return [];
 }
 
-// ─── YouTube Data API v3 ──────────────────────────────────────────────────────
+// ─── YouTube Data API v3 ────────────────────────────────────────────────────
 async function searchYouTube(query: string, apiKey: string): Promise<Song[]> {
   if (!apiKey) return [];
   try {
@@ -182,7 +328,7 @@ async function searchYouTube(query: string, apiKey: string): Promise<Song[]> {
     url.searchParams.set('maxResults', '20');
     url.searchParams.set('key', apiKey);
 
-    const res = await fetchWithTimeout(url.toString(), 10000);
+    const res = await fetchWithTimeout(url.toString(), 8000);
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err?.error?.message || `HTTP ${res.status}`);
@@ -212,7 +358,7 @@ async function searchYouTube(query: string, apiKey: string): Promise<Song[]> {
   }
 }
 
-// ─── Main search export ───────────────────────────────────────────────────────
+// ─── Main search export ────────────────────────────────────────────────────
 export async function searchSongs(
   query: string,
   apiKey = '',
@@ -225,7 +371,7 @@ export async function searchSongs(
   // Cache hit
   const cached = getCachedResult(q);
   if (cached?.length) {
-    console.log('[Cache] hit:', cached.length);
+    console.log('[Cache] ✓ hit:', cached.length);
     return { songs: cached, provider: 'cache' };
   }
 
@@ -234,14 +380,14 @@ export async function searchSongs(
 
   if (provider === 'youtube' && apiKey) {
     order.push({ name: 'youtube', fn: () => searchYouTube(q, apiKey) });
-    order.push({ name: 'piped',   fn: () => searchPiped(q) });
+    order.push({ name: 'piped', fn: () => searchPiped(q) });
     order.push({ name: 'invidious', fn: () => searchInvidious(q) });
   } else if (provider === 'invidious') {
     order.push({ name: 'invidious', fn: () => searchInvidious(q) });
-    order.push({ name: 'piped',    fn: () => searchPiped(q) });
+    order.push({ name: 'piped', fn: () => searchPiped(q) });
   } else {
     // default: piped first
-    order.push({ name: 'piped',    fn: () => searchPiped(q) });
+    order.push({ name: 'piped', fn: () => searchPiped(q) });
     order.push({ name: 'invidious', fn: () => searchInvidious(q) });
   }
 
@@ -266,7 +412,10 @@ export async function searchSongs(
 }
 
 export function clearSearchCache(): void {
-  Object.keys(localStorage)
-    .filter((k) => k.startsWith('music_search_'))
-    .forEach((k) => localStorage.removeItem(k));
+  const keys = Object.keys(localStorage);
+  for (let i = 0; i < keys.length; i++) {
+    if (keys[i].startsWith('music_search_') || keys[i] === 'music_instance_health') {
+      localStorage.removeItem(keys[i]);
+    }
+  }
 }
