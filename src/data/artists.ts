@@ -1,0 +1,86 @@
+import type { Artist, Mood } from '@/types';
+
+export const ARTISTS: Artist[] = [
+  // Bollywood - Top Artists
+  { id: '1', name: 'Arijit Singh', genre: 'Bollywood', image: 'https://i.scdn.co/image/ab6761610000e5eb4293385d324db8558179afd9', searchQuery: 'Arijit Singh best songs' },
+  { id: '2', name: 'Shreya Ghoshal', genre: 'Bollywood', image: 'https://i.scdn.co/image/ab6761610000e5eb82c65b9e9a7023c32736e1a3', searchQuery: 'Shreya Ghoshal songs' },
+  { id: '3', name: 'AR Rahman', genre: 'Bollywood', image: 'https://i.scdn.co/image/ab6761610000e5eb5b6bcfe82cdd4e95f3c88b73', searchQuery: 'AR Rahman songs' },
+  { id: '4', name: 'Atif Aslam', genre: 'Bollywood', image: 'https://i.scdn.co/image/ab6761610000e5eb9a4f81f0df7c7b8acf4da57f', searchQuery: 'Atif Aslam songs' },
+  { id: '5', name: 'Sonu Nigam', genre: 'Bollywood', image: 'https://i.scdn.co/image/ab6761610000e5eb7b4def02024f5285c1b9b7ab', searchQuery: 'Sonu Nigam songs' },
+  { id: '6', name: 'Neha Kakkar', genre: 'Bollywood', image: 'https://i.scdn.co/image/ab6761610000e5eb7f50e96c4b3cd5b1de1c5e0e', searchQuery: 'Neha Kakkar songs' },
+  { id: '7', name: 'Lata Mangeshkar', genre: 'Classical', image: 'https://i.scdn.co/image/ab6761610000e5eb9fe2780a4b42e8af47aab2f2', searchQuery: 'Lata Mangeshkar songs' },
+  { id: '8', name: 'Kishore Kumar', genre: 'Classic', image: 'https://i.scdn.co/image/ab6761610000e5ebdbf3f5faa44f8f0f2e1f1e21', searchQuery: 'Kishore Kumar songs' },
+  { id: '9', name: 'Mohammed Rafi', genre: 'Classic', image: 'https://i.scdn.co/image/ab6761610000e5ebdca3a3c54b04b6c13a9e4bfe', searchQuery: 'Mohammed Rafi songs' },
+  { id: '10', name: 'Asha Bhosle', genre: 'Classic', image: 'https://i.scdn.co/image/ab6761610000e5eb9b1d0c0e81d2be0f4d3e9b4a', searchQuery: 'Asha Bhosle songs' },
+  // Punjabi Artists
+  { id: '11', name: 'AP Dhillon', genre: 'Punjabi', image: 'https://i.scdn.co/image/ab6761610000e5eba08b0b9e44a2e4b2c66de7b8', searchQuery: 'AP Dhillon songs' },
+  { id: '12', name: 'Diljit Dosanjh', genre: 'Punjabi', image: 'https://i.scdn.co/image/ab6761610000e5eb0e5abf8a2ab44f7834734ba1', searchQuery: 'Diljit Dosanjh songs' },
+  { id: '13', name: 'Guru Randhawa', genre: 'Punjabi', image: 'https://i.scdn.co/image/ab6761610000e5eb1d3f8c8b8e1bce0d4c7e2a3b', searchQuery: 'Guru Randhawa songs' },
+  { id: '14', name: 'Mika Singh', genre: 'Punjabi', image: 'https://i.scdn.co/image/ab6761610000e5eb7a3f8c9d0e4b2a1c6f5d3e8b', searchQuery: 'Mika Singh songs' },
+  { id: '15', name: 'Badshah', genre: 'Hip-Hop', image: 'https://i.scdn.co/image/ab6761610000e5eb89e2ba34bfc21e91f9c9e8a7', searchQuery: 'Badshah songs' },
+  // Bhojpuri Artists
+  { id: '16', name: 'Pawan Singh', genre: 'Bhojpuri', image: 'https://yt3.googleusercontent.com/ytc/AIdro_n_RqzuHmSJIALEj0hIcGMKsH9R3D4aTKxQ8Hkc=s176-c-k-c0x00ffffff-no-rj', searchQuery: 'Pawan Singh Bhojpuri songs' },
+  { id: '17', name: 'Khesari Lal', genre: 'Bhojpuri', image: 'https://yt3.googleusercontent.com/ytc/AIdro_mQ8VqU2i5RhX6Y3HnKBvBfKj7GxVQwPrT3L8w=s176-c-k-c0x00ffffff-no-rj', searchQuery: 'Khesari Lal Yadav songs' },
+  { id: '18', name: 'Ritesh Pandey', genre: 'Bhojpuri', image: 'https://yt3.googleusercontent.com/ytc/AIdro_kPmL3R4uHmKjp-FnRBhxWBYJk_Qq3gGH2L3TU=s176-c-k-c0x00ffffff-no-rj', searchQuery: 'Ritesh Pandey Bhojpuri songs' },
+  { id: '19', name: 'Dinesh Lal Nirahua', genre: 'Bhojpuri', image: 'https://yt3.googleusercontent.com/ytc/AIdro_n3L8mVBNkj8-oKP7aYU3JeRCsVN8MDXP3s7Bo=s176-c-k-c0x00ffffff-no-rj', searchQuery: 'Nirahua Bhojpuri songs' },
+  { id: '20', name: 'Pramod Premi', genre: 'Bhojpuri', image: 'https://yt3.googleusercontent.com/ytc/AIdro_mBfHD3j8Z7NvP5mL9KrN_J5eGrSG3w4K7N6c0=s176-c-k-c0x00ffffff-no-rj', searchQuery: 'Pramod Premi Bhojpuri songs' },
+  // Indie / Hip-Hop
+  { id: '21', name: 'Divine', genre: 'Hip-Hop', image: 'https://i.scdn.co/image/ab6761610000e5eba2f4c3b3e0f1d7e2c8b9a5f4', searchQuery: 'Divine rapper songs' },
+  { id: '22', name: 'Raftaar', genre: 'Hip-Hop', image: 'https://i.scdn.co/image/ab6761610000e5eb3c9b2e5f1a6d4c7e8b0f2a1d', searchQuery: 'Raftaar songs' },
+  { id: '23', name: 'King', genre: 'Indie', image: 'https://i.scdn.co/image/ab6761610000e5eb9a6f2c3e4b5d1a7c8f0e2b3d', searchQuery: 'King singer Tu Aashiqui songs' },
+  // More Bollywood
+  { id: '24', name: 'Jubin Nautiyal', genre: 'Bollywood', image: 'https://i.scdn.co/image/ab6761610000e5eba2c8f0e3b4d6a1c7e9b5f2d8', searchQuery: 'Jubin Nautiyal songs' },
+  { id: '25', name: 'Darshan Raval', genre: 'Bollywood', image: 'https://i.scdn.co/image/ab6761610000e5eb8c4f1e2a3b5d7c9e0f2b4a6d', searchQuery: 'Darshan Raval songs' },
+  { id: '26', name: 'Tony Kakkar', genre: 'Bollywood', image: 'https://i.scdn.co/image/ab6761610000e5eb1a2c4e6f8b0d3e5c7a9f1b2d', searchQuery: 'Tony Kakkar songs' },
+  { id: '27', name: 'Alka Yagnik', genre: 'Bollywood', image: 'https://i.scdn.co/image/ab6761610000e5eb4d2a8f6c1e3b5d7a9c0f2e4b', searchQuery: 'Alka Yagnik songs' },
+  { id: '28', name: 'Udit Narayan', genre: 'Bollywood', image: 'https://i.scdn.co/image/ab6761610000e5eb6c4e2a0f8b1d3c5e7a9f2b4d', searchQuery: 'Udit Narayan songs' },
+  { id: '29', name: 'Kumar Sanu', genre: 'Bollywood', image: 'https://i.scdn.co/image/ab6761610000e5eb2e4c6a8f0b1d3e5c7a9f2b4d', searchQuery: 'Kumar Sanu songs' },
+  { id: '30', name: 'Sunidhi Chauhan', genre: 'Bollywood', image: 'https://i.scdn.co/image/ab6761610000e5eb8a4c2e0f6b1d3c5e7a9f2b4d', searchQuery: 'Sunidhi Chauhan songs' },
+  { id: '31', name: 'Shaan', genre: 'Bollywood', image: 'https://i.scdn.co/image/ab6761610000e5eb0c4e2a6f8b1d3c5e7a9f2b4d', searchQuery: 'Shaan singer songs' },
+  { id: '32', name: 'KK', genre: 'Bollywood', image: 'https://i.scdn.co/image/ab6761610000e5eb4c2e6a0f8b1d3c5e7a9f2b4d', searchQuery: 'KK singer songs' },
+  { id: '33', name: 'Ankit Tiwari', genre: 'Bollywood', image: 'https://i.scdn.co/image/ab6761610000e5eb2c4e6a8f0b1d3c5e7a9f2b4d', searchQuery: 'Ankit Tiwari songs' },
+  { id: '34', name: 'Mithoon', genre: 'Composer', image: 'https://i.scdn.co/image/ab6761610000e5eb6c4e2a0f8b3d5c7e9a1f2b4d', searchQuery: 'Mithoon songs' },
+  { id: '35', name: 'Pritam', genre: 'Composer', image: 'https://i.scdn.co/image/ab6761610000e5eb8c4e2a0f6b1d3c5e7a9f2b4d', searchQuery: 'Pritam songs' },
+  // Bhojpuri Extra
+  { id: '36', name: 'Ankush Raja', genre: 'Bhojpuri', image: 'https://yt3.googleusercontent.com/ytc/AIdro_nQXmL3R4uHmKjp-FnRBhxWBYJk_Qq3gGH2L3TU=s176-c-k-c0x00ffffff-no-rj', searchQuery: 'Ankush Raja Bhojpuri songs' },
+  { id: '37', name: 'Neelkamal Singh', genre: 'Bhojpuri', image: 'https://yt3.googleusercontent.com/ytc/AIdro_nPmL3R4uHmKjp-FnRBhxWBYJk_Qq3gGH2L3TU=s176-c-k-c0x00ffffff-no-rj', searchQuery: 'Neelkamal Singh Bhojpuri songs' },
+  { id: '38', name: 'Samar Singh', genre: 'Bhojpuri', image: 'https://yt3.googleusercontent.com/ytc/AIdro_mRmL3R4uHmKjp-FnRBhxWBYJk_Qq3gGH2L3TU=s176-c-k-c0x00ffffff-no-rj', searchQuery: 'Samar Singh Bhojpuri songs' },
+  { id: '39', name: 'Tanishk Bagchi', genre: 'Composer', image: 'https://i.scdn.co/image/ab6761610000e5eb1c4e2a0f8b3d5c7e9a1f2b4d', searchQuery: 'Tanishk Bagchi songs' },
+  { id: '40', name: 'Amaal Mallik', genre: 'Composer', image: 'https://i.scdn.co/image/ab6761610000e5eb3c4e2a0f8b5d7c9e1a3f2b4d', searchQuery: 'Amaal Mallik songs' },
+];
+
+export const MOODS: Mood[] = [
+  { id: '1', name: '😍 Romantic', query: 'romantic hindi songs 2024', icon: '😍', gradient: 'from-pink-500 to-rose-500' },
+  { id: '2', name: '💪 Workout', query: 'gym workout motivation songs', icon: '💪', gradient: 'from-orange-500 to-red-500' },
+  { id: '3', name: '😌 Chill', query: 'chill lofi hindi songs', icon: '😌', gradient: 'from-blue-500 to-cyan-500' },
+  { id: '4', name: '🎉 Party', query: 'party songs Hindi 2024', icon: '🎉', gradient: 'from-violet-500 to-purple-500' },
+  { id: '5', name: '😢 Sad', query: 'sad songs Hindi broken heart', icon: '😢', gradient: 'from-slate-500 to-gray-500' },
+  { id: '6', name: '🕉️ Devotional', query: 'bhakti songs devotional Hindi', icon: '🕉️', gradient: 'from-yellow-500 to-amber-500' },
+  { id: '7', name: '🎸 Retro', query: 'old classic Hindi songs 90s', icon: '🎸', gradient: 'from-amber-500 to-orange-500' },
+  { id: '8', name: '🔥 Trending', query: 'trending Hindi songs 2024', icon: '🔥', gradient: 'from-red-500 to-pink-500' },
+  { id: '9', name: '🎤 Bhojpuri', query: 'Bhojpuri superhit songs 2024', icon: '🎤', gradient: 'from-green-500 to-emerald-500' },
+  { id: '10', name: '🎵 Punjabi', query: 'new Punjabi songs 2024', icon: '🎵', gradient: 'from-indigo-500 to-blue-500' },
+  { id: '11', name: '🌙 Night', query: 'night drive songs Hindi', icon: '🌙', gradient: 'from-purple-900 to-indigo-900' },
+  { id: '12', name: '🎼 Classical', query: 'Indian classical music songs', icon: '🎼', gradient: 'from-teal-500 to-green-500' },
+];
+
+export const TRENDING_SEARCHES = [
+  '🔥 Teri Ada',
+  '💫 Tum Kya Mile',
+  '🎵 Ve Kamleya',
+  '❤️ Kesariya',
+  '🎤 Arjan Vailly',
+  '🌟 Oo Antava',
+  '💃 Pushpa songs',
+  '🎸 Jhoome Jo Pathaan',
+  '🕺 Naatu Naatu',
+  '🎵 Satranga',
+  '💥 Besharam Rang',
+  '🌙 Raataan Lambiyan',
+  '❤️ Tere Naam',
+  '🎵 Bhool Bhulaiyaa 2',
+  '🎤 Bhojpuri Superhit 2024',
+  '🌺 Hanuman Chalisa',
+  '🔥 New Punjabi 2024',
+  '💫 Sid Sriram hits',
+];
