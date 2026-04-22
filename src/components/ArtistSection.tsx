@@ -1,133 +1,129 @@
-import { memo, useState, useCallback, useMemo } from 'react';
+import { useState, memo, useCallback, useMemo } from 'react';
 import { Music } from 'lucide-react';
 import type { Artist } from '@/types';
 import { ARTISTS } from '@/data/artists';
 
-// ─── Genre Gradients (fallback avatar colors) ──────────────
-const GENRE_GRADIENTS: Record<string, string> = {
-  Bollywood:   'from-violet-500 to-pink-500',
-  Classical:   'from-amber-500 to-orange-500',
-  Classic:     'from-amber-600 to-yellow-500',
-  Punjabi:     'from-indigo-500 to-blue-500',
-  Bhojpuri:    'from-green-500 to-emerald-500',
-  'Hip-Hop':   'from-red-500 to-orange-500',
-  Indie:       'from-cyan-500 to-teal-500',
-  Composer:    'from-purple-500 to-violet-600',
-};
-const DEFAULT_GRADIENT = 'from-violet-500 to-pink-500';
+// ─── Generate SVG avatar as data URI (ZERO network, ALWAYS works) ──────
+const GRADIENT_PAIRS: [string, string][] = [
+  ['#7c3aed', '#a855f7'],
+  ['#ec4899', '#f472b6'],
+  ['#f59e0b', '#fbbf24'],
+  ['#06b6d4', '#22d3ee'],
+  ['#10b981', '#34d399'],
+  ['#ef4444', '#f87171'],
+  ['#6366f1', '#818cf8'],
+  ['#14b8a6', '#2dd4bf'],
+  ['#8b5cf6', '#c084fc'],
+  ['#f97316', '#fb923c'],
+];
 
-// ─── Artist Avatar (with bulletproof fallback) ──────────────
-const ArtistAvatar = memo(function ArtistAvatar({
+function generateAvatarDataUri(name: string): string {
+  const initial = (name?.charAt(0) || '?').toUpperCase();
+  const idx = name ? name.charCodeAt(0) % GRADIENT_PAIRS.length : 0;
+  const [c1, c2] = GRADIENT_PAIRS[idx];
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="176" height="176">
+    <defs><linearGradient id="g" x1="0" y1="0" x2="176" y2="176">
+      <stop offset="0%" stop-color="${c1}"/>
+      <stop offset="100%" stop-color="${c2}"/>
+    </linearGradient></defs>
+    <rect width="176" height="176" rx="88" fill="url(#g)"/>
+    <text x="88" y="100" text-anchor="middle" fill="white" font-family="system-ui,sans-serif" font-size="80" font-weight="700">${initial}</text>
+  </svg>`;
+
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
+
+// ─── Memoized Card ──────────────────────────────────────────────────────
+const ArtistCard = memo(function ArtistCard({
   artist,
-  size,
+  onArtistClick,
+  query,
+  darkMode,
+  idx,
 }: {
   artist: Artist;
-  size: number;
+  onArtistClick: (name: string) => void;
+  query: string;
+  darkMode: boolean;
+  idx: number;
 }) {
   const [imgFailed, setImgFailed] = useState(false);
-  const handleError = useCallback(() => setImgFailed(true), []);
 
-  const gradient = GENRE_GRADIENTS[artist.genre] || DEFAULT_GRADIENT;
-  const initial = artist.name.charAt(0).toUpperCase();
+  const handleClick = useCallback(() => onArtistClick(query), [onArtistClick, query]);
+  const handleImgError = useCallback(() => setImgFailed(true), []);
 
-  // Fallback: gradient circle with initial letter
-  if (imgFailed) {
-    return (
-      <div
-        className={`w-full h-full rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-md`}
-        style={{ width: size, height: size }}
-        aria-hidden="true"
-      >
-        <span className="text-white font-bold" style={{ fontSize: size * 0.4 }}>
-          {initial}
-        </span>
-      </div>
-    );
-  }
+  // Pre-generate fallback avatar (no network needed!)
+  const fallbackSrc = useMemo(() => generateAvatarDataUri(artist.name), [artist.name]);
+
+  const imgSrc = imgFailed ? fallbackSrc : artist.image;
 
   return (
-    <div className="w-full h-full rounded-2xl overflow-hidden" style={{ width: size, height: size }}>
-      <img
-        src={artist.image}
-        alt={artist.name}
-        className="w-full h-full object-cover"
-        onError={handleError}
-        loading="lazy"
-        decoding="async"
-        draggable={false}
-      />
-    </div>
+    <button
+      onClick={handleClick}
+      aria-label={`Play ${artist.name} music`}
+      className={`flex-shrink-0 w-28 flex flex-col items-center gap-2 p-3 rounded-2xl transition-all duration-200 hover:scale-105 active:scale-95 transform-gpu ${
+        darkMode
+          ? 'bg-white/5 hover:bg-white/15 border border-white/10 hover:border-violet-500/40'
+          : 'bg-white/70 hover:bg-white border border-gray-200 hover:border-violet-400'
+      }`}
+    >
+      <div className="relative w-16 h-16">
+        <img
+          src={imgSrc}
+          alt={artist.name}
+          className="w-16 h-16 rounded-full object-cover ring-2 ring-violet-400/40 shadow-lg"
+          onError={handleImgError}
+          /* ⚠️ NO loading="lazy" — horizontal scroll me lazy load BUG hai,
+             browser images ko "near viewport" nahi samajhta toh load hi nahi karta */
+          decoding="async"
+          draggable={false}
+        />
+        <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-violet-500 rounded-full flex items-center justify-center shadow">
+          <Music className="w-2.5 h-2.5 text-white" />
+        </div>
+      </div>
+      <div className="text-center w-full">
+        <p className="text-xs font-semibold leading-tight truncate max-w-[96px] mx-auto">
+          {artist.name}
+        </p>
+        {artist.genre && (
+          <p className="text-[10px] text-violet-400 mt-0.5 truncate max-w-[96px] mx-auto">
+            {artist.genre}
+          </p>
+        )}
+      </div>
+    </button>
   );
 });
 
-// ─── Genre Filter Buttons ───────────────────────────────────
-const GENRE_LABELS = ['All', 'Bollywood', 'Punjabi', 'Bhojpuri', 'Classic', 'Hip-Hop', 'Composer'];
-
-// ─── Main Section ───────────────────────────────────────────
-interface Props {
-  onArtistClick: (query: string) => void;
-  darkMode: boolean;
-}
-
-export default memo(function ArtistSection({ onArtistClick, darkMode }: Props) {
-  const [selectedGenre, setSelectedGenre] = useState('All');
-
-  const filteredArtists = useMemo(() => {
-    if (selectedGenre === 'All') return ARTISTS;
-    return ARTISTS.filter((a) => a.genre === selectedGenre);
-  }, [selectedGenre]);
+// ─── Main Section ───────────────────────────────────────────────────────
+export default function ArtistSection({ onArtistClick, darkMode }: Props) {
+  if (!ARTISTS?.length) return null;
 
   return (
-    <section>
-      <h2 className="text-sm sm:text-base font-bold mb-3 flex items-center gap-2">
-        🎤 Popular Artists
-        <span className="text-xs font-normal text-gray-400">({filteredArtists.length})</span>
-      </h2>
-
-      {/* Genre filter */}
-      <div className="flex gap-1.5 overflow-x-auto pb-2 mb-3 scrollbar-hide">
-        {GENRE_LABELS.map((genre) => (
-          <button
-            key={genre}
-            onClick={() => setSelectedGenre(genre)}
-            className={`flex-shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-all border ${
-              selectedGenre === genre
-                ? 'bg-violet-500/30 border-violet-500/50 text-violet-300'
-                : darkMode
-                ? 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
-                : 'bg-gray-100 border-gray-200 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            {genre}
-          </button>
-        ))}
+    <section className="mb-6">
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-lg font-bold flex items-center gap-2">
+          🎤 Popular Artists
+          <span className="text-xs font-normal text-gray-400 ml-1">
+            ({ARTISTS.length}+)
+          </span>
+        </h2>
       </div>
 
-      {/* Artist grid — responsive columns */}
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
-        {filteredArtists.map((artist) => (
-          <button
+      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+        {ARTISTS.map((artist, idx) => (
+          <ArtistCard
             key={artist.id}
-            onClick={() => onArtistClick(artist.searchQuery || `${artist.name} songs`)}
-            className="flex flex-col items-center gap-1.5 group transition-all hover:scale-105 active:scale-95"
-          >
-            {/* Avatar */}
-            <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-2xl overflow-hidden shadow-md group-hover:shadow-xl transition-shadow">
-              <ArtistAvatar artist={artist} size={112} />
-            </div>
-
-            {/* Name */}
-            <p className="text-[10px] sm:text-xs font-medium text-center leading-tight truncate w-full max-w-[112px]">
-              {artist.name}
-            </p>
-
-            {/* Genre tag */}
-            <p className="text-[8px] sm:text-[10px] text-gray-400 truncate">
-              {artist.genre}
-            </p>
-          </button>
+            artist={artist}
+            onArtistClick={onArtistClick}
+            query={artist.searchQuery || `${artist.name} songs`}
+            darkMode={darkMode}
+            idx={idx}
+          />
         ))}
       </div>
     </section>
   );
-});
+}
