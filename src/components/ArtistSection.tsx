@@ -4,7 +4,7 @@ import type { Artist } from '@/types';
 import { ARTISTS } from '@/data/artists';
 import { resolveArtistImages, generateAvatarDataUri } from '@/utils/artistImages';
 
-// ─── Genre Filter Options ─────────────────────────────────
+// ─── Genre Filter ─────────────────────────────────────────
 const GENRE_LABELS = ['All', 'Bollywood', 'Punjabi', 'Bhojpuri', 'Classic', 'Hip-Hop', 'Composer'];
 
 // ─── Single Artist Card ───────────────────────────────────
@@ -25,13 +25,21 @@ const ArtistCard = memo(function ArtistCard({
   const [imgLoaded, setImgLoaded] = useState(false);
 
   const handleClick = useCallback(() => onArtistClick(query), [onArtistClick, query]);
-  const handleError = useCallback(() => setImgFailed(true), []);
-  const handleLoad = useCallback(() => setImgLoaded(true), []);
+  const handleError = useCallback(() => {
+    setImgFailed(true);
+  }, []);
+  const handleLoad = useCallback(() => {
+    setImgLoaded(true);
+  }, []);
 
-  // Determine what to show
-  const hasRealImage = resolvedSrc && !imgFailed;
   const fallbackAvatar = useMemo(() => generateAvatarDataUri(artist.name), [artist.name]);
-  const displaySrc = hasRealImage ? resolvedSrc : fallbackAvatar;
+
+  // Priority: resolved Deezer > original URL > SVG avatar
+  const src = imgFailed
+    ? fallbackAvatar
+    : resolvedSrc || artist.image || fallbackAvatar;
+
+  const isRealPhoto = src !== fallbackAvatar;
 
   return (
     <button
@@ -44,27 +52,28 @@ const ArtistCard = memo(function ArtistCard({
           : 'bg-white/70 hover:bg-white border border-gray-200 hover:border-violet-400'
         }`}
     >
-      {/* Avatar Container */}
+      {/* Avatar */}
       <div className="relative w-20 h-20 sm:w-24 sm:h-24">
-        {/* Shimmer skeleton — only while real image is loading */}
-        {hasRealImage && !imgLoaded && (
-          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-700 dark:to-gray-600 animate-pulse" />
+        {/* Shimmer while real photo loads */}
+        {isRealPhoto && !imgLoaded && !imgFailed && (
+          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-700 dark:to-gray-600 animate-pulse z-0" />
         )}
 
-        {/* Actual Image or SVG Avatar */}
         <img
-          src={displaySrc}
+          src={src}
           alt={artist.name}
           className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover ring-2 ring-violet-400/30 shadow-lg
-            transition-opacity duration-300 ${imgLoaded || !hasRealImage ? 'opacity-100' : 'opacity-0'}`}
+            transition-opacity duration-300 z-10 relative
+            ${imgLoaded || !isRealPhoto ? 'opacity-100' : 'opacity-0'}`}
           onError={handleError}
           onLoad={handleLoad}
+          /* NO loading="lazy" — causes images to never load in horizontal scroll */
           decoding="async"
           draggable={false}
         />
 
         {/* Music badge */}
-        <div className="absolute -bottom-0.5 -right-0.5 w-6 h-6 bg-violet-500 rounded-full flex items-center justify-center shadow-md ring-2 ring-background">
+        <div className="absolute -bottom-0.5 -right-0.5 w-6 h-6 bg-violet-500 rounded-full flex items-center justify-center shadow-md ring-2 ring-background z-20">
           <Music className="w-3 h-3 text-white" />
         </div>
       </div>
@@ -96,19 +105,20 @@ export default memo(function ArtistSection({ onArtistClick, darkMode }: Props) {
   const [isResolving, setIsResolving] = useState(true);
   const hasFetched = useRef(false);
 
-  // Resolve all artist images on mount
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
 
     resolveArtistImages(ARTISTS, (progress) => {
-      setResolvedImages(progress);
-    }).then((final) => {
-      setResolvedImages(final);
-      setIsResolving(false);
-    }).catch(() => {
-      setIsResolving(false);
-    });
+      setResolvedImages({ ...progress });
+    })
+      .then((final) => {
+        setResolvedImages(final);
+        setIsResolving(false);
+      })
+      .catch(() => {
+        setIsResolving(false);
+      });
   }, []);
 
   const filteredArtists = useMemo(() => {
