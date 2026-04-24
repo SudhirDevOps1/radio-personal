@@ -23,7 +23,6 @@ import ToastContainer from '@/components/ToastContainer';
 import RadioSection from '@/components/RadioSection';
 import Footer from '@/components/Footer';
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
 function safeJSONParse<T>(val: string | null, fallback: T): T {
     if (!val) return fallback;
     try {
@@ -39,16 +38,13 @@ function safeSetParse(val: string | null): Set<string> {
     return new Set(Array.isArray(arr) ? arr : []);
 }
 
-// ─── App ─────────────────────────────────────────────────────────────────────
 export default function App() {
-    // ── Settings / Preferences ────────────────────────────────────────────────
     const [darkMode, setDarkMode] = useState(() => localStorage.getItem('darkMode') !== 'false');
     const [provider, setProvider] = useState<SearchProvider>(
         () => (localStorage.getItem('preferredProvider') as SearchProvider) || 'piped',
     );
     const [apiKey, setApiKey] = useState(() => localStorage.getItem('youtubeApiKey') || '');
 
-    // ── UI State ──────────────────────────────────────────────────────────────
     const [activeTab, setActiveTab] = useState<ActiveTab>('music');
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState<Song[]>([]);
@@ -59,7 +55,6 @@ export default function App() {
     const [isPlayerReady, setIsPlayerReady] = useState(false);
     const [isOnline, setIsOnline] = useState(navigator.onLine);
 
-    // ── Persistent data ────────────────────────────────────────────────────────
     const [recentlyPlayed, setRecentlyPlayed] = useState<Song[]>(() =>
         safeJSONParse<Song[]>(localStorage.getItem('recentlyPlayed'), []),
     );
@@ -67,13 +62,11 @@ export default function App() {
         safeSetParse(localStorage.getItem('favorites')),
     );
 
-    // ── Hooks ─────────────────────────────────────────────────────────────────
     const { toasts, addToast, removeToast } = useToast();
     const { queue, addToQueue, removeFromQueue, clearQueue } = useQueue();
     const { cachedSongs, handleClearCache, refreshCache } = useOfflineCache();
     const player = usePlayer(queue);
 
-    // ── Refs for stable event listeners ───────────────────────────────────────
     const playerRef = useRef(player);
     const queueRef = useRef(queue);
     const addToastRef = useRef(addToast);
@@ -82,7 +75,6 @@ export default function App() {
     useEffect(() => { queueRef.current = queue; }, [queue]);
     useEffect(() => { addToastRef.current = addToast; }, [addToast]);
 
-    // ── Derived Sets for O(1) lookups ─────────────────────────────────────────
     const cachedVideoIds = useMemo(
         () => new Set(cachedSongs.map((c) => c.videoId)),
         [cachedSongs],
@@ -100,7 +92,6 @@ export default function App() {
         { label: 'Queue', value: String(queue.length), icon: '🎵' },
     ], [cachedSongs.length, favorites.size, queue.length]);
 
-    // ── Online/Offline detection ───────────────────────────────────────────────
     useEffect(() => {
         const online = () => { setIsOnline(true); addToastRef.current('Back online 🌐', 'success'); };
         const offline = () => { setIsOnline(false); addToastRef.current('You are offline. Cached songs still work!', 'warning'); };
@@ -112,7 +103,6 @@ export default function App() {
         };
     }, []);
 
-    // ── YouTube player init ────────────────────────────────────────────────────
     useEffect(() => {
         const timer = setTimeout(async () => {
             try {
@@ -131,13 +121,11 @@ export default function App() {
         return () => clearTimeout(timer);
     }, []);
 
-    // ── Search ─────────────────────────────────────────────────────────────────
     const doSearch = useCallback(async (q: string) => {
         if (!q.trim()) return;
         setIsLoading(true);
         setSearchError(null);
         setSearchResults([]);
-
         try {
             const result = await searchSongs(q.trim(), apiKey, provider);
             if (result.songs.length === 0) {
@@ -169,7 +157,6 @@ export default function App() {
         setSearchError(null);
     }, []);
 
-    // ── Song Actions ───────────────────────────────────────────────────────────
     const addToRecentlyPlayed = useCallback((song: Song) => {
         setRecentlyPlayed((prev) => {
             const filtered = prev.filter((s) => s.videoId !== song.videoId);
@@ -220,7 +207,6 @@ export default function App() {
         if (song) toggleFavorite(song);
     }, [toggleFavorite]);
 
-    // ── Settings handlers ──────────────────────────────────────────────────────
     const handleToggleDarkMode = useCallback(() => {
         setDarkMode((d) => { localStorage.setItem('darkMode', String(!d)); return !d; });
     }, []);
@@ -251,12 +237,10 @@ export default function App() {
 
     const handleToggleQueue = useCallback(() => setShowQueue((q) => !q), []);
 
-    // ── Keyboard shortcuts ─────────────────────────────────────────────────────
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
             const tag = (e.target as HTMLElement).tagName;
             if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-
             const p = playerRef.current;
             switch (e.code) {
                 case 'Space': case 'KeyK': e.preventDefault(); p.togglePlay(); break;
@@ -285,7 +269,6 @@ export default function App() {
         return () => window.removeEventListener('keydown', handler);
     }, [toggleFavorite]);
 
-    // ── Theme classes ──────────────────────────────────────────────────────────
     const bg = darkMode
         ? 'bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900 text-white'
         : 'bg-gradient-to-br from-gray-50 via-purple-50 to-gray-100 text-gray-900';
@@ -300,20 +283,16 @@ export default function App() {
 
     const currentVideoId = player.currentSong?.videoId;
 
-    // ── Render ─────────────────────────────────────────────────────────────────
     return (
         <div className={`min-h-screen ${bg} transition-colors duration-300`}>
-            {/* Hidden YouTube player container */}
             <div
                 id="yt-player"
                 aria-hidden="true"
                 style={{ position: 'fixed', top: '-9999px', left: '-9999px', width: '1px', height: '1px', pointerEvents: 'none' }}
             />
 
-            {/* ── Header ─────────────────────────────────────────────────────── */}
             <header className={`sticky top-0 z-50 ${headerGlass} border-b shadow-sm`}>
                 <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-                    {/* Logo */}
                     <div className="flex items-center gap-3 flex-shrink-0">
                         <div className="p-2 bg-gradient-to-br from-violet-500 to-pink-500 rounded-xl shadow-lg">
                             <Music className="w-5 h-5 text-white" />
@@ -326,7 +305,6 @@ export default function App() {
                         </div>
                     </div>
 
-                    {/* Tabs */}
                     <div className={`flex gap-1 p-1 rounded-xl ${darkMode ? 'bg-white/8' : 'bg-gray-100'}`}>
                         {(['music', 'radio'] as const).map((tab) => (
                             <button
@@ -343,44 +321,28 @@ export default function App() {
                         ))}
                     </div>
 
-                    {/* Right controls */}
                     <div className="flex items-center gap-2 flex-shrink-0">
-                        <div className={`hidden md:flex items-center gap-1 text-xs px-2 py-1 rounded-full ${isOnline ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'
-                            }`}>
+                        <div className={`hidden md:flex items-center gap-1 text-xs px-2 py-1 rounded-full ${isOnline ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'}`}>
                             {isOnline ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
                             <span>{isOnline ? 'Online' : 'Offline'}</span>
                         </div>
-                        <div className={`hidden md:flex items-center gap-1 text-xs px-2 py-1 rounded-full ${isPlayerReady ? 'bg-violet-500/15 text-violet-400' : 'bg-yellow-500/15 text-yellow-400'
-                            }`}>
+                        <div className={`hidden md:flex items-center gap-1 text-xs px-2 py-1 rounded-full ${isPlayerReady ? 'bg-violet-500/15 text-violet-400' : 'bg-yellow-500/15 text-yellow-400'}`}>
                             <div className={`w-1.5 h-1.5 rounded-full ${isPlayerReady ? 'bg-violet-400' : 'bg-yellow-400 animate-pulse'}`} />
                             <span>{isPlayerReady ? 'Ready' : 'Loading'}</span>
                         </div>
-
-                        <button
-                            onClick={handleToggleDarkMode}
-                            className={`p-2 rounded-xl transition-colors ${darkMode ? 'hover:bg-white/10' : 'hover:bg-gray-200'}`}
-                            aria-label="Toggle theme"
-                        >
+                        <button onClick={handleToggleDarkMode} className={`p-2 rounded-xl transition-colors ${darkMode ? 'hover:bg-white/10' : 'hover:bg-gray-200'}`} aria-label="Toggle theme">
                             {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                         </button>
-                        <button
-                            onClick={() => setShowSettings(true)}
-                            className={`p-2 rounded-xl transition-colors ${darkMode ? 'hover:bg-white/10' : 'hover:bg-gray-200'}`}
-                            aria-label="Settings"
-                        >
+                        <button onClick={() => setShowSettings(true)} className={`p-2 rounded-xl transition-colors ${darkMode ? 'hover:bg-white/10' : 'hover:bg-gray-200'}`} aria-label="Settings">
                             <Settings className="w-4 h-4" />
                         </button>
                     </div>
                 </div>
             </header>
 
-            {/* ── Main Content ────────────────────────────────────────────────── */}
             <main className={`max-w-7xl mx-auto px-4 py-6 ${player.currentSong ? 'pb-52' : 'pb-8'}`}>
-
-                {/* ═══════════════ MUSIC TAB ═══════════════ */}
                 {activeTab === 'music' && (
                     <div className="space-y-6">
-                        {/* Search Bar */}
                         <form onSubmit={handleSearch}>
                             <div className={`flex gap-2 p-2 rounded-2xl ${glass} border shadow-lg`}>
                                 <Search className="w-5 h-5 ml-2 text-violet-400 self-center flex-shrink-0" />
@@ -422,86 +384,45 @@ export default function App() {
                             </div>
                         </form>
 
-                        {/* Search Error */}
                         {searchError && (
                             <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400" role="alert">
                                 <p className="font-medium text-sm">⚠️ {searchError}</p>
                                 <div className="flex gap-2 mt-2">
-                                    <button
-                                        onClick={() => doSearch(searchQuery)}
-                                        className="text-xs px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 rounded-lg"
-                                    >
-                                        Retry
-                                    </button>
-                                    <button
-                                        onClick={() => setShowSettings(true)}
-                                        className="text-xs px-3 py-1.5 bg-violet-500/20 hover:bg-violet-500/30 text-violet-400 rounded-lg"
-                                    >
-                                        Switch Provider
-                                    </button>
+                                    <button onClick={() => doSearch(searchQuery)} className="text-xs px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 rounded-lg">Retry</button>
+                                    <button onClick={() => setShowSettings(true)} className="text-xs px-3 py-1.5 bg-violet-500/20 hover:bg-violet-500/30 text-violet-400 rounded-lg">Switch Provider</button>
                                 </div>
                             </div>
                         )}
 
-                        {/* Search Results */}
                         {searchResults.length > 0 && (
                             <section>
                                 <div className="flex items-center justify-between mb-3">
                                     <h2 className="text-base font-bold flex items-center gap-2">
                                         🔍 Results <span className="text-sm font-normal text-gray-400">({searchResults.length})</span>
                                     </h2>
-                                    <button
-                                        onClick={handleClearSearch}
-                                        className={`text-xs px-3 py-1.5 rounded-lg ${darkMode ? 'bg-white/8 hover:bg-white/15' : 'bg-gray-100 hover:bg-gray-200'}`}
-                                    >
-                                        Clear
-                                    </button>
+                                    <button onClick={handleClearSearch} className={`text-xs px-3 py-1.5 rounded-lg ${darkMode ? 'bg-white/8 hover:bg-white/15' : 'bg-gray-100 hover:bg-gray-200'}`}>Clear</button>
                                 </div>
                                 <div className="space-y-2">
                                     {searchResults.map((song) => (
-                                        <SongCard
-                                            key={song.videoId}
-                                            song={song}
-                                            isPlaying={player.isPlaying}
-                                            isCurrent={currentVideoId === song.videoId}
-                                            isFavorite={favorites.has(song.videoId)}
-                                            isCached={cachedVideoIds.has(song.videoId)}
-                                            onPlay={handlePlaySong}
-                                            onAddToQueue={handleAddToQueue}
-                                            onToggleFavorite={toggleFavorite}
-                                            darkMode={darkMode}
-                                        />
+                                        <SongCard key={song.videoId} song={song} isPlaying={player.isPlaying} isCurrent={currentVideoId === song.videoId} isFavorite={favorites.has(song.videoId)} isCached={cachedVideoIds.has(song.videoId)} onPlay={handlePlaySong} onAddToQueue={handleAddToQueue} onToggleFavorite={toggleFavorite} darkMode={darkMode} />
                                     ))}
                                 </div>
                             </section>
                         )}
 
-                        {/* Moods */}
                         <section>
                             <h2 className="text-base font-bold mb-3 flex items-center gap-2">🎭 Browse by Mood</h2>
                             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
                                 {MOODS.map((mood) => (
-                                    <button
-                                        key={mood.id}
-                                        onClick={() => { setSearchQuery(mood.name); doSearch(mood.query); }}
-                                        className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all hover:scale-105 active:scale-95 border ${darkMode
-                                            ? 'bg-white/8 border-white/15 hover:bg-violet-500/30 hover:border-violet-500/50'
-                                            : 'bg-white/70 border-gray-200 hover:bg-violet-50 hover:border-violet-400'
-                                            }`}
-                                    >
+                                    <button key={mood.id} onClick={() => { setSearchQuery(mood.name); doSearch(mood.query); }} className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all hover:scale-105 active:scale-95 border ${darkMode ? 'bg-white/8 border-white/15 hover:bg-violet-500/30 hover:border-violet-500/50' : 'bg-white/70 border-gray-200 hover:bg-violet-50 hover:border-violet-400'}`}>
                                         {mood.name}
                                     </button>
                                 ))}
                             </div>
                         </section>
 
-                        {/* Artists */}
-                        <ArtistSection
-                            onArtistClick={(q) => { setSearchQuery(q); doSearch(q); }}
-                            darkMode={darkMode}
-                        />
+                        <ArtistSection onArtistClick={(q) => { setSearchQuery(q); doSearch(q); }} darkMode={darkMode} />
 
-                        {/* Trending */}
                         <section>
                             <h2 className="text-base font-bold mb-3 flex items-center gap-2">
                                 <TrendingUp className="w-4 h-4 text-violet-400" />
@@ -509,21 +430,13 @@ export default function App() {
                             </h2>
                             <div className="flex flex-wrap gap-2">
                                 {TRENDING_SEARCHES.map((term) => (
-                                    <button
-                                        key={term}
-                                        onClick={() => { setSearchQuery(term); doSearch(term); }}
-                                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all hover:scale-105 active:scale-95 border ${darkMode
-                                            ? 'bg-white/8 border-white/15 hover:bg-violet-500/20 hover:border-violet-500/40'
-                                            : 'bg-white/70 border-gray-200 hover:bg-violet-50 hover:border-violet-400'
-                                            }`}
-                                    >
+                                    <button key={term} onClick={() => { setSearchQuery(term); doSearch(term); }} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all hover:scale-105 active:scale-95 border ${darkMode ? 'bg-white/8 border-white/15 hover:bg-violet-500/20 hover:border-violet-500/40' : 'bg-white/70 border-gray-200 hover:bg-violet-50 hover:border-violet-400'}`}>
                                         {term}
                                     </button>
                                 ))}
                             </div>
                         </section>
 
-                        {/* Recently Played */}
                         {recentlyPlayed.length > 0 && (
                             <section>
                                 <h2 className="text-base font-bold mb-3 flex items-center gap-2">
@@ -532,25 +445,9 @@ export default function App() {
                                 </h2>
                                 <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
                                     {recentlyPlayed.slice(0, 12).map((song) => (
-                                        <button
-                                            key={song.videoId}
-                                            onClick={() => handlePlaySong(song)}
-                                            className={`flex-shrink-0 w-40 p-3 rounded-2xl border text-left transition-all hover:scale-105 active:scale-95 group ${currentVideoId === song.videoId
-                                                ? 'bg-violet-500/20 border-violet-500/40'
-                                                : darkMode
-                                                    ? 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-violet-500/30'
-                                                    : 'bg-white/60 border-gray-200 hover:bg-white hover:border-violet-400/50'
-                                                }`}
-                                        >
+                                        <button key={song.videoId} onClick={() => handlePlaySong(song)} className={`flex-shrink-0 w-40 p-3 rounded-2xl border text-left transition-all hover:scale-105 active:scale-95 group ${currentVideoId === song.videoId ? 'bg-violet-500/20 border-violet-500/40' : darkMode ? 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-violet-500/30' : 'bg-white/60 border-gray-200 hover:bg-white hover:border-violet-400/50'}`}>
                                             <div className="relative mb-2">
-                                                <img
-                                                    src={song.thumbnail}
-                                                    alt={song.title}
-                                                    className="w-full h-24 rounded-xl object-cover"
-                                                    loading="lazy"
-                                                    decoding="async"
-                                                    draggable={false}
-                                                />
+                                                <img src={song.thumbnail} alt={song.title} className="w-full h-24 rounded-xl object-cover" loading="lazy" decoding="async" draggable={false} />
                                                 <div className="absolute inset-0 bg-black/40 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                                     <Play className="w-8 h-8 text-white fill-white" />
                                                 </div>
@@ -563,7 +460,6 @@ export default function App() {
                             </section>
                         )}
 
-                        {/* Favorites Quick Access */}
                         {favoriteSongs.length > 0 && (
                             <section>
                                 <h2 className="text-base font-bold mb-3 flex items-center gap-2">
@@ -572,24 +468,12 @@ export default function App() {
                                 </h2>
                                 <div className="space-y-2">
                                     {favoriteSongs.map((song) => (
-                                        <SongCard
-                                            key={song.videoId}
-                                            song={song}
-                                            isPlaying={player.isPlaying}
-                                            isCurrent={currentVideoId === song.videoId}
-                                            isFavorite={true}
-                                            isCached={cachedVideoIds.has(song.videoId)}
-                                            onPlay={handlePlaySong}
-                                            onAddToQueue={handleAddToQueue}
-                                            onToggleFavorite={toggleFavorite}
-                                            darkMode={darkMode}
-                                        />
+                                        <SongCard key={song.videoId} song={song} isPlaying={player.isPlaying} isCurrent={currentVideoId === song.videoId} isFavorite={true} isCached={cachedVideoIds.has(song.videoId)} onPlay={handlePlaySong} onAddToQueue={handleAddToQueue} onToggleFavorite={toggleFavorite} darkMode={darkMode} />
                                     ))}
                                 </div>
                             </section>
                         )}
 
-                        {/* Offline / Cached Songs */}
                         {cachedSongs.length > 0 && (
                             <section>
                                 <h2 className="text-base font-bold mb-3 flex items-center gap-2">
@@ -598,34 +482,17 @@ export default function App() {
                                 </h2>
                                 <div className="space-y-2">
                                     {cachedSongs.slice(0, 8).map((song) => (
-                                        <SongCard
-                                            key={song.videoId}
-                                            song={song}
-                                            isPlaying={player.isPlaying}
-                                            isCurrent={currentVideoId === song.videoId}
-                                            isFavorite={favorites.has(song.videoId)}
-                                            isCached={true}
-                                            onPlay={handlePlaySong}
-                                            onAddToQueue={handleAddToQueue}
-                                            onToggleFavorite={toggleFavorite}
-                                            darkMode={darkMode}
-                                        />
+                                        <SongCard key={song.videoId} song={song} isPlaying={player.isPlaying} isCurrent={currentVideoId === song.videoId} isFavorite={favorites.has(song.videoId)} isCached={true} onPlay={handlePlaySong} onAddToQueue={handleAddToQueue} onToggleFavorite={toggleFavorite} darkMode={darkMode} />
                                     ))}
                                 </div>
                             </section>
                         )}
 
-                        {/* Stats */}
                         <section>
-                            <h2 className="text-base font-bold mb-1 flex items-center gap-2 text-gray-400 text-sm">
-                                ℹ️ App Info
-                            </h2>
+                            <h2 className="text-base font-bold mb-1 flex items-center gap-2 text-gray-400 text-sm">ℹ️ App Info</h2>
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                 {stats.map((stat) => (
-                                    <div
-                                        key={stat.label}
-                                        className={`p-3 rounded-xl border text-center ${darkMode ? 'bg-white/5 border-white/10' : 'bg-white/60 border-gray-200'}`}
-                                    >
+                                    <div key={stat.label} className={`p-3 rounded-xl border text-center ${darkMode ? 'bg-white/5 border-white/10' : 'bg-white/60 border-gray-200'}`}>
                                         <p className="text-xl">{stat.icon}</p>
                                         <p className="text-lg font-bold text-violet-400">{stat.value}</p>
                                         <p className="text-xs text-gray-400">{stat.label}</p>
@@ -636,16 +503,13 @@ export default function App() {
                     </div>
                 )}
 
-                {/* ═══════════════ RADIO TAB ═══════════════ */}
                 {activeTab === 'radio' && (
                     <RadioSection darkMode={darkMode} addToast={addToast} />
                 )}
 
-                {/* ── Footer ─────────────────────────────────── */}
                 <Footer darkMode={darkMode} />
             </main>
 
-            {/* ── Player Bar ──────────────────────────────────────────────────── */}
             <PlayerBar
                 currentSong={player.currentSong}
                 isPlaying={player.isPlaying}
@@ -665,43 +529,17 @@ export default function App() {
                 onToggleQueue={handleToggleQueue}
             />
 
-            {/* ── Queue Panel ─────────────────────────────────────────────────── */}
             {showQueue && (
-                <QueuePanel
-                    queue={queue}
-                    currentSong={player.currentSong}
-                    darkMode={darkMode}
-                    onPlay={handlePlaySong}
-                    onRemove={removeFromQueue}
-                    onClear={clearQueue}
-                    onClose={() => setShowQueue(false)}
-                />
+                <QueuePanel queue={queue} currentSong={player.currentSong} darkMode={darkMode} onPlay={handlePlaySong} onRemove={removeFromQueue} onClear={clearQueue} onClose={() => setShowQueue(false)} />
             )}
 
-            {/* ── Settings Modal ──────────────────────────────────────────────── */}
             {showSettings && (
-                <SettingsModal
-                    darkMode={darkMode}
-                    provider={provider}
-                    apiKey={apiKey}
-                    onClose={() => setShowSettings(false)}
-                    onToggleDarkMode={handleToggleDarkMode}
-                    onSaveProvider={handleSaveProvider}
-                    onSaveApiKey={handleSaveApiKey}
-                    onClearOfflineCache={handleClearOfflineCache}
-                    onClearSearchCache={handleClearSearchCache}
-                />
+                <SettingsModal darkMode={darkMode} provider={provider} apiKey={apiKey} onClose={() => setShowSettings(false)} onToggleDarkMode={handleToggleDarkMode} onSaveProvider={handleSaveProvider} onSaveApiKey={handleSaveApiKey} onClearOfflineCache={handleClearOfflineCache} onClearSearchCache={handleClearSearchCache} />
             )}
 
-            {/* ── Toast Notifications ─────────────────────────────────────────── */}
             <ToastContainer toasts={toasts} onRemove={removeToast} />
 
-            {/* Footer offline badge */}
-            <div
-                className={`fixed bottom-0 left-4 z-30 text-[10px] px-2 py-1 rounded-t-lg ${isOnline ? 'bg-green-500/20 text-green-400' : 'bg-orange-500/20 text-orange-400'
-                    } ${player.currentSong ? 'bottom-28 md:bottom-32' : 'bottom-0'}`}
-                aria-hidden="true"
-            >
+            <div className={`fixed bottom-0 left-4 z-30 text-[10px] px-2 py-1 rounded-t-lg ${isOnline ? 'bg-green-500/20 text-green-400' : 'bg-orange-500/20 text-orange-400'} ${player.currentSong ? 'bottom-28 md:bottom-32' : 'bottom-0'}`} aria-hidden="true">
                 {isOnline ? '🌐 Online' : '📴 Offline Mode'}
             </div>
         </div>
