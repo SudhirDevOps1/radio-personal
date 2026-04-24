@@ -3,145 +3,142 @@ import { Play, Plus, Heart, Music } from 'lucide-react';
 import type { Song } from '@/types';
 
 interface Props {
-  song: Song;
-  isPlaying?: boolean;
-  isCurrent?: boolean;
-  isFavorite?: boolean;
-  isCached?: boolean;
-  onPlay: (song: Song) => void;
-  onAddToQueue: (song: Song) => void;
-  onToggleFavorite: (song: Song) => void;
-  darkMode: boolean;
+    song: Song;
+    isPlaying?: boolean;
+    isCurrent?: boolean;
+    isFavorite?: boolean;
+    isCached?: boolean;
+    onPlay: (song: Song) => void;
+    onAddToQueue: (song: Song) => void;
+    onToggleFavorite: (song: Song) => void;
+    darkMode: boolean;
 }
 
 const BARS = [0, 1, 2];
 
 export default memo(function SongCard({
-  song,
-  isPlaying = false,
-  isCurrent = false,
-  isFavorite = false,
-  isCached = false,
-  onPlay,
-  onAddToQueue,
-  onToggleFavorite,
-  darkMode,
+    song,
+    isPlaying = false,
+    isCurrent = false,
+    isFavorite = false,
+    isCached = false,
+    onPlay,
+    onAddToQueue,
+    onToggleFavorite,
+    darkMode,
 }: Props) {
-  const [imgError, setImgError] = useState(false);
+    const [imgError, setImgError] = useState(false);
 
-  const handlePlay = useCallback(() => onPlay(song), [onPlay, song]);
-  const handleAddToQueue = useCallback(() => onAddToQueue(song), [onAddToQueue, song]);
-  const handleToggleFavorite = useCallback(() => onToggleFavorite(song), [onToggleFavorite, song]);
-  const handleImgError = useCallback(() => setImgError(true), []);
+    const handlePlay = useCallback(() => onPlay(song), [onPlay, song]);
+    const handleAddToQueue = useCallback(() => onAddToQueue(song), [onAddToQueue, song]);
+    const handleToggleFavorite = useCallback(() => onToggleFavorite(song), [onToggleFavorite, song]);
+    const handleImgError = useCallback(() => setImgError(true), []);
 
-  return (
-    <div
-      className={`flex items-center gap-3 p-3 rounded-xl transition-all group transform-gpu ${
-        isCurrent
-          ? 'bg-violet-500/20 border border-violet-500/50'
-          : darkMode
-          ? 'bg-white/5 hover:bg-white/10 border border-white/10 hover:border-violet-500/30'
-          : 'bg-white/60 hover:bg-white border border-gray-200 hover:border-violet-400/50'
-      }`}
-    >
-      {/* Thumbnail */}
-      <div className="relative flex-shrink-0 w-14 h-14">
-        {!imgError ? (
-          <img
-            src={song.thumbnail}
-            alt={song.title}
-            className="w-14 h-14 rounded-lg object-cover"
-            onError={handleImgError}
-            loading="lazy"
-            decoding="async"
-            draggable={false}
-          />
-        ) : (
-          <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-violet-600 to-pink-600 flex items-center justify-center">
-            <Music className="w-6 h-6 text-white" />
-          </div>
-        )}
+    return (
+        <div
+            className={`flex items-center gap-3 p-3 rounded-xl transition-all group transform-gpu ${isCurrent
+                    ? 'bg-violet-500/20 border border-violet-500/50'
+                    : darkMode
+                        ? 'bg-white/5 hover:bg-white/10 border border-white/10 hover:border-violet-500/30'
+                        : 'bg-white/60 hover:bg-white border border-gray-200 hover:border-violet-400/50'
+                }`}
+        >
+            {/* Thumbnail */}
+            <div className="relative flex-shrink-0 w-14 h-14">
+                {!imgError ? (
+                    <img
+                        src={song.thumbnail}
+                        alt={song.title}
+                        className="w-14 h-14 rounded-lg object-cover"
+                        onError={handleImgError}
+                        loading="lazy"
+                        decoding="async"
+                        draggable={false}
+                    />
+                ) : (
+                    <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-violet-600 to-pink-600 flex items-center justify-center">
+                        <Music className="w-6 h-6 text-white" />
+                    </div>
+                )}
 
-        {/* Now Playing Animation */}
-        {isCurrent && isPlaying && (
-          <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50">
-            <div className="flex gap-0.5 items-end h-5">
-              {BARS.map((i) => (
-                <div
-                  key={i}
-                  className="w-1 bg-violet-400 rounded-sm"
-                  style={{
-                    animation: `barBounce 0.8s ${i * 0.15}s ease-in-out infinite alternate`,
-                    height: `${40 + i * 20}%`,
-                  }}
-                />
-              ))}
+                {/* Now Playing Animation */}
+                {isCurrent && isPlaying && (
+                    <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50">
+                        <div className="flex gap-0.5 items-end h-5">
+                            {BARS.map((i) => (
+                                <div
+                                    key={i}
+                                    className="w-1 bg-violet-400 rounded-sm"
+                                    style={{
+                                        animation: `barBounce 0.8s ${i * 0.15}s ease-in-out infinite alternate`,
+                                        height: `${40 + i * 20}%`,
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Hover Play Overlay */}
+                <button
+                    onClick={handlePlay}
+                    className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                    aria-label={`Play ${song.title}`}
+                >
+                    <Play className="w-6 h-6 text-white fill-white" />
+                </button>
             </div>
-          </div>
-        )}
 
-        {/* Hover Play Overlay */}
-        <button
-          onClick={handlePlay}
-          className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-          aria-label={`Play ${song.title}`}
-        >
-          <Play className="w-6 h-6 text-white fill-white" />
-        </button>
-      </div>
+            {/* Info */}
+            <div className="flex-1 min-w-0">
+                <p className={`font-medium text-sm truncate ${isCurrent ? 'text-violet-400' : ''}`}>
+                    {song.title}
+                </p>
+                <p className={`text-xs truncate mt-0.5 ${darkMode ? 'text-white/50' : 'text-gray-500'}`}>
+                    {song.artist}
+                </p>
+                <div className="flex items-center gap-2 mt-1">
+                    {song.duration !== '0:00' && (
+                        <span className="text-[10px] text-gray-400">{song.duration}</span>
+                    )}
+                    {isCached && (
+                        <span className="text-[10px] bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded">
+                            💾 Cached
+                        </span>
+                    )}
+                </div>
+            </div>
 
-      {/* Info */}
-      <div className="flex-1 min-w-0">
-        <p className={`font-medium text-sm truncate ${isCurrent ? 'text-violet-400' : ''}`}>
-          {song.title}
-        </p>
-        <p className={`text-xs truncate mt-0.5 ${darkMode ? 'text-white/50' : 'text-gray-500'}`}>
-          {song.artist}
-        </p>
-        <div className="flex items-center gap-2 mt-1">
-          {song.duration !== '0:00' && (
-            <span className="text-[10px] text-gray-400">{song.duration}</span>
-          )}
-          {isCached && (
-            <span className="text-[10px] bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded">
-              💾 Cached
-            </span>
-          )}
+            {/* Actions */}
+            <div className="flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                    onClick={handleToggleFavorite}
+                    className={`p-2 rounded-full transition-colors ${isFavorite
+                            ? 'text-pink-500'
+                            : darkMode
+                                ? 'hover:bg-white/10 text-white/40'
+                                : 'hover:bg-gray-100 text-gray-400'
+                        }`}
+                    aria-label={isFavorite ? `Remove ${song.title} from favorites` : `Add ${song.title} to favorites`}
+                >
+                    <Heart className={`w-4 h-4 ${isFavorite ? 'fill-pink-500' : ''}`} />
+                </button>
+                <button
+                    onClick={handleAddToQueue}
+                    className={`p-2 rounded-full transition-colors ${darkMode ? 'hover:bg-white/10 text-white/40' : 'hover:bg-gray-100 text-gray-400'
+                        }`}
+                    aria-label={`Add ${song.title} to queue`}
+                >
+                    <Plus className="w-4 h-4" />
+                </button>
+                <button
+                    onClick={handlePlay}
+                    className="p-2 bg-violet-500 hover:bg-violet-600 rounded-full transition-colors"
+                    aria-label={`Play ${song.title}`}
+                >
+                    <Play className="w-4 h-4 text-white fill-white" />
+                </button>
+            </div>
         </div>
-      </div>
-
-      {/* Actions */}
-      <div className="flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-        <button
-          onClick={handleToggleFavorite}
-          className={`p-2 rounded-full transition-colors ${
-            isFavorite
-              ? 'text-pink-500'
-              : darkMode
-              ? 'hover:bg-white/10 text-white/40'
-              : 'hover:bg-gray-100 text-gray-400'
-          }`}
-          aria-label={isFavorite ? `Remove ${song.title} from favorites` : `Add ${song.title} to favorites`}
-        >
-          <Heart className={`w-4 h-4 ${isFavorite ? 'fill-pink-500' : ''}`} />
-        </button>
-        <button
-          onClick={handleAddToQueue}
-          className={`p-2 rounded-full transition-colors ${
-            darkMode ? 'hover:bg-white/10 text-white/40' : 'hover:bg-gray-100 text-gray-400'
-          }`}
-          aria-label={`Add ${song.title} to queue`}
-        >
-          <Plus className="w-4 h-4" />
-        </button>
-        <button
-          onClick={handlePlay}
-          className="p-2 bg-violet-500 hover:bg-violet-600 rounded-full transition-colors"
-          aria-label={`Play ${song.title}`}
-        >
-          <Play className="w-4 h-4 text-white fill-white" />
-        </button>
-      </div>
-    </div>
-  );
+    );
 });

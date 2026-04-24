@@ -2,149 +2,209 @@
 
 /* ─── Design Tokens ──────────────────────────────────────────── */
 :root {
-  --color-primary: #8b5cf6;
-  --color-primary-glow: rgba(139, 92, 246, 0.5);
-  --color-primary-glow-strong: rgba(139, 92, 246, 0.8);
-  --color-gold: rgba(245, 158, 11, 0.4);
+    --color-primary: #8b5cf6;
+    --color-primary-glow: rgba(139, 92, 246, 0.5);
+    --color-primary-glow-strong: rgba(139, 92, 246, 0.8);
+    --color-gold: rgba(245, 158, 11, 0.4);
 
-  --range-height: 4px;
-  --range-thumb-size: 14px;
+    --range-height: 4px;
+    --range-thumb-size: 14px;
 
-  --anim-duration-shimmer: 2s;
-  --anim-duration-float: 6s;
-  --anim-duration-pulse: 2s;
+    --anim-duration-shimmer: 2s;
+    --anim-duration-float: 6s;
+    --anim-duration-pulse: 2s;
 
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --safe-left: env(safe-area-inset-left, 0px);
-  --safe-right: env(safe-area-inset-right, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
 }
 
 /* ─── Base ───────────────────────────────────────────────────── */
 html {
-  scroll-behavior: smooth;
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-  color-scheme: light dark;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    color-scheme: light dark;
 }
 
 body {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-  overflow-x: hidden;
-  padding-bottom: var(--safe-bottom);
-  padding-left: var(--safe-left);
-  padding-right: var(--safe-right);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+    padding-bottom: var(--safe-bottom);
+    padding-left: var(--safe-left);
+    padding-right: var(--safe-right);
 }
 
 /* ─── Selection ──────────────────────────────────────────────── */
 ::selection {
-  background: var(--color-primary-glow);
-  color: white;
+    background: var(--color-primary-glow);
+    color: white;
 }
 
 /* ─── Focus Visible (keyboard only) ─────────────────────────── */
 :focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
 }
 
 :focus:not(:focus-visible) {
-  outline: none;
+    outline: none;
 }
 
 /* ─── Reduced Motion ────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }
 
 /* ─── Scrollbar Hide ────────────────────────────────────────── */
 .scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
+
 .scrollbar-hide::-webkit-scrollbar {
-  display: none;
+    display: none;
 }
 
 /* ─── Animations ────────────────────────────────────────────── */
 @keyframes spin-cd {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 @keyframes barBounce {
-  0%   { transform: scaleY(0.4); }
-  100% { transform: scaleY(1); }
+    0% {
+        transform: scaleY(0.4);
+    }
+
+    100% {
+        transform: scaleY(1);
+    }
 }
 
 @keyframes slideInRight {
-  from { transform: translateX(110%); opacity: 0; }
-  to   { transform: translateX(0);    opacity: 1; }
+    from {
+        transform: translateX(110%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 @keyframes slideOutRight {
-  from { transform: translateX(0);    opacity: 1; }
-  to   { transform: translateX(110%); opacity: 0; }
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(110%);
+        opacity: 0;
+    }
 }
 
 @keyframes float {
-  0%, 100% { transform: translate(0px, 0px) scale(1); }
-  33%       { transform: translate(20px, -20px) scale(1.05); }
-  66%       { transform: translate(-10px, 10px) scale(0.97); }
+
+    0%,
+    100% {
+        transform: translate(0px, 0px) scale(1);
+    }
+
+    33% {
+        transform: translate(20px, -20px) scale(1.05);
+    }
+
+    66% {
+        transform: translate(-10px, 10px) scale(0.97);
+    }
 }
 
 @keyframes shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position:  200% 0; }
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
 }
 
 @keyframes pulse-gold {
-  0%, 100% { box-shadow: 0 0 0 0 var(--color-gold); }
-  50%       { box-shadow: 0 0 0 8px transparent; }
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 var(--color-gold);
+    }
+
+    50% {
+        box-shadow: 0 0 0 8px transparent;
+    }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes scaleIn {
-  from { transform: scale(0.95); opacity: 0; }
-  to   { transform: scale(1);    opacity: 1; }
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 /* ─── Animation Utilities ───────────────────────────────────── */
 .animate-shimmer {
-  background-size: 200% 100%;
-  animation: shimmer var(--anim-duration-shimmer) linear infinite;
+    background-size: 200% 100%;
+    animation: shimmer var(--anim-duration-shimmer) linear infinite;
 }
 
 .animate-float {
-  animation: float var(--anim-duration-float) ease-in-out infinite;
+    animation: float var(--anim-duration-float) ease-in-out infinite;
 }
 
 .animate-pulse-gold {
-  animation: pulse-gold var(--anim-duration-pulse) ease-in-out infinite;
+    animation: pulse-gold var(--anim-duration-pulse) ease-in-out infinite;
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.3s ease-out both;
+    animation: fadeIn 0.3s ease-out both;
 }
 
 .animate-scale-in {
-  animation: scaleIn 0.2s ease-out both;
+    animation: scaleIn 0.2s ease-out both;
 }
 
 .animate-slide-out-right {
-  animation: slideOutRight 0.2s ease-in both;
+    animation: slideOutRight 0.2s ease-in both;
 }
 
 /* ─── GPU Hints for Animated Elements ──────────────────────── */
@@ -153,120 +213,120 @@ body {
 .animate-pulse-gold,
 [class*="spin-cd"],
 [class*="barBounce"] {
-  will-change: transform, opacity;
-  contain: layout style;
+    will-change: transform, opacity;
+    contain: layout style;
 }
 
 /* ─── Input Range ───────────────────────────────────────────── */
 input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  height: var(--range-height);
-  border-radius: 2px;
-  outline: none;
-  cursor: pointer;
-  background: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+    height: var(--range-height);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+    background: transparent;
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
-  height: var(--range-height);
-  border-radius: 2px;
+    height: var(--range-height);
+    border-radius: 2px;
 }
 
 input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: var(--range-thumb-size);
-  height: var(--range-thumb-size);
-  border-radius: 50%;
-  background: var(--color-primary);
-  cursor: pointer;
-  box-shadow: 0 0 4px var(--color-primary-glow);
-  transition: box-shadow 0.2s, transform 0.15s;
-  margin-top: calc((var(--range-height) - var(--range-thumb-size)) / 2);
+    -webkit-appearance: none;
+    appearance: none;
+    width: var(--range-thumb-size);
+    height: var(--range-thumb-size);
+    border-radius: 50%;
+    background: var(--color-primary);
+    cursor: pointer;
+    box-shadow: 0 0 4px var(--color-primary-glow);
+    transition: box-shadow 0.2s, transform 0.15s;
+    margin-top: calc((var(--range-height) - var(--range-thumb-size)) / 2);
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
-  box-shadow: 0 0 8px var(--color-primary-glow-strong);
-  transform: scale(1.15);
+    box-shadow: 0 0 8px var(--color-primary-glow-strong);
+    transform: scale(1.15);
 }
 
 input[type="range"]::-webkit-slider-thumb:active {
-  transform: scale(1.25);
+    transform: scale(1.25);
 }
 
 input[type="range"]::-moz-range-track {
-  height: var(--range-height);
-  border-radius: 2px;
+    height: var(--range-height);
+    border-radius: 2px;
 }
 
 input[type="range"]::-moz-range-thumb {
-  width: var(--range-thumb-size);
-  height: var(--range-thumb-size);
-  border: none;
-  border-radius: 50%;
-  background: var(--color-primary);
-  cursor: pointer;
-  box-shadow: 0 0 4px var(--color-primary-glow);
-  transition: box-shadow 0.2s, transform 0.15s;
+    width: var(--range-thumb-size);
+    height: var(--range-thumb-size);
+    border: none;
+    border-radius: 50%;
+    background: var(--color-primary);
+    cursor: pointer;
+    box-shadow: 0 0 4px var(--color-primary-glow);
+    transition: box-shadow 0.2s, transform 0.15s;
 }
 
 input[type="range"]::-moz-range-thumb:hover {
-  box-shadow: 0 0 8px var(--color-primary-glow-strong);
-  transform: scale(1.15);
+    box-shadow: 0 0 8px var(--color-primary-glow-strong);
+    transform: scale(1.15);
 }
 
 /* ─── Canvas (Waveform) ─────────────────────────────────────── */
 canvas {
-  image-rendering: auto;
+    image-rendering: auto;
 }
 
 /* ─── Mobile ────────────────────────────────────────────────── */
 * {
-  -webkit-tap-highlight-color: transparent;
+    -webkit-tap-highlight-color: transparent;
 }
 
 @media (max-width: 640px) {
-  body {
-    font-size: 14px;
-  }
+    body {
+        font-size: 14px;
+    }
 }
 
 /* ─── Scroll Lock (for modals/panels) ──────────────────────── */
 .scroll-locked {
-  overflow: hidden !important;
-  overscroll-behavior: none;
+    overflow: hidden !important;
+    overscroll-behavior: none;
 }
 
 /* ─── Glass Card Base ───────────────────────────────────────── */
 .glass {
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
 }
 
 /* ─── Truncation Utility ───────────────────────────────────── */
 .truncate-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .truncate-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 /* ─── Print ─────────────────────────────────────────────────── */
 @media print {
-  .no-print {
-    display: none !important;
-  }
+    .no-print {
+        display: none !important;
+    }
 
-  body {
-    background: white !important;
-    color: black !important;
-  }
+    body {
+        background: white !important;
+        color: black !important;
+    }
 }
