@@ -21,6 +21,7 @@ import QueuePanel from '@/components/QueuePanel';
 import SettingsModal from '@/components/SettingsModal';
 import ToastContainer from '@/components/ToastContainer';
 import RadioSection from '@/components/RadioSection';
+import Footer from '@/components/Footer';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function safeJSONParse<T>(val: string | null, fallback: T): T {
@@ -346,13 +347,11 @@ export default function App() {
 
                     {/* Right controls */}
                     <div className="flex items-center gap-2 flex-shrink-0">
-                        {/* Online indicator */}
                         <div className={`hidden md:flex items-center gap-1 text-xs px-2 py-1 rounded-full ${isOnline ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'
                             }`}>
                             {isOnline ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
                             <span>{isOnline ? 'Online' : 'Offline'}</span>
                         </div>
-                        {/* Player ready indicator */}
                         <div className={`hidden md:flex items-center gap-1 text-xs px-2 py-1 rounded-full ${isPlayerReady ? 'bg-violet-500/15 text-violet-400' : 'bg-yellow-500/15 text-yellow-400'
                             }`}>
                             <div className={`w-1.5 h-1.5 rounded-full ${isPlayerReady ? 'bg-violet-400' : 'bg-yellow-400 animate-pulse'}`} />
@@ -643,6 +642,9 @@ export default function App() {
                 {activeTab === 'radio' && (
                     <RadioSection darkMode={darkMode} addToast={addToast} />
                 )}
+
+                {/* ── Footer ─────────────────────────────────── */}
+                <Footer darkMode={darkMode} />
             </main>
 
             {/* ── Player Bar ──────────────────────────────────────────────────── */}
