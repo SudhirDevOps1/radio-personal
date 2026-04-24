@@ -7,7 +7,7 @@ import {
 
 import type { Song, SearchProvider, ActiveTab } from '@/types';
 import { searchSongs, clearSearchCache } from '@/utils/api';
-import { initYouTubePlayer, PlayerState as YTPlayerState } from '@/utils/youtubePlayer';
+import { initYouTubePlayer } from '@/utils/youtubePlayer';
 import { usePlayer } from '@/hooks/usePlayer';
 import { useQueue } from '@/hooks/useQueue';
 import { useOfflineCache } from '@/hooks/useOfflineCache';
@@ -76,12 +76,10 @@ export default function App() {
     const playerRef = useRef(player);
     const queueRef = useRef(queue);
     const addToastRef = useRef(addToast);
-    const favoritesRef = useRef(favorites);
 
     useEffect(() => { playerRef.current = player; }, [player]);
     useEffect(() => { queueRef.current = queue; }, [queue]);
     useEffect(() => { addToastRef.current = addToast; }, [addToast]);
-    useEffect(() => { favoritesRef.current = favorites; }, [favorites]);
 
     // ── Derived Sets for O(1) lookups ─────────────────────────────────────────
     const cachedVideoIds = useMemo(
@@ -114,14 +112,16 @@ export default function App() {
     }, []);
 
     // ── YouTube player init ────────────────────────────────────────────────────
+    // NOTE: onStateChange REMOVED — usePlayer.ts handles auto-next with guards
     useEffect(() => {
         const timer = setTimeout(async () => {
             try {
                 await initYouTubePlayer('yt-player', {
-                    onReady: () => { setIsPlayerReady(true); addToastRef.current('Player ready ▶️', 'success'); },
-                    onStateChange: (e) => {
-                        if (e.data === YTPlayerState.ENDED) playerRef.current.next();
+                    onReady: () => {
+                        setIsPlayerReady(true);
+                        addToastRef.current('Player ready ▶️', 'success');
                     },
+                    // ❌ REMOVED onStateChange — usePlayer polling handles auto-next
                     onError: () => addToastRef.current('Playback error. Try another song.', 'error'),
                 });
             } catch (err) {
