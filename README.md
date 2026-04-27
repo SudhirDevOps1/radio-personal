@@ -26,109 +26,77 @@
 <table>
   <tr>
     <td align="center" width="50%">
-      <img src="screenshot/img1.jpg" alt="Home Screen — Discover & Search" width="100%"/>
+      <img src="screenshot/img1.jpg" alt="Music Player Interface" width="100%"/>
       <br/>
-      <sub><b>🏠 Home Screen — Discover & Search</b></sub>
+      <sub><b>🎵 Music Player — Full playback controls, album art, progress bar, shuffle/repeat & favorite toggle</b></sub>
     </td>
     <td align="center" width="50%">
-      <img src="screenshot/img2.jpg" alt="Music Player — Now Playing View" width="100%"/>
+      <img src="screenshot/img2.jpg" alt="Radio Stations Browser" width="100%"/>
       <br/>
-      <sub><b>🎵 Music Player — Now Playing View</b></sub>
-    </td>
-  </tr>
-  <tr>
-    <td align="center" width="50%">
-      <img src="screenshot/img3.jpg" alt="Live Radio — 50,000+ Stations" width="100%"/>
-      <br/>
-      <sub><b>📻 Live Radio — 50,000+ Global Stations</b></sub>
-    </td>
-    <td align="center" width="50%">
-      <img src="screenshot/img4.jpg" alt="Curated Artists — 40+ Indian Artists" width="100%"/>
-      <br/>
-      <sub><b>🎤 Curated Artists — 40+ Indian Stars</b></sub>
+      <sub><b>📻 Radio Stations Browser — 50,000+ stations from 200+ countries, filter by language, genre & votes</b></sub>
     </td>
   </tr>
   <tr>
     <td align="center" width="50%">
-      <img src="screenshot/img5.jpg" alt="Mood-Based Discovery" width="100%"/>
+      <img src="screenshot/img3.jpg" alt="Curated Artists Collection" width="100%"/>
       <br/>
-      <sub><b>🎭 Mood-Based Music Discovery</b></sub>
+      <sub><b>🎤 Curated Artists — 40+ Indian stars like Arijit Singh, Shreya Goshal, AP Dhillon & more</b></sub>
     </td>
     <td align="center" width="50%">
-      <img src="screenshot/img6.jpg" alt="Favorites & History" width="100%"/>
+      <img src="screenshot/img4.jpg" alt="Mood-Based Discovery" width="100%"/>
       <br/>
-      <sub><b>❤️ Favorites & Listening History</b></sub>
+      <sub><b>🎭 Mood-Based Discovery — Romantic, Workout, Chill, Party, Devotional, Bhojpuri, Punjabi & more</b></sub>
     </td>
   </tr>
   <tr>
     <td align="center" width="50%">
-      <img src="screenshot/img7.jpg" alt="Dark Mode — Glass Morphism UI" width="100%"/>
+      <img src="screenshot/img5.jpg" alt="Universal Search" width="100%"/>
       <br/>
-      <sub><b>🌙 Dark Mode — Glass Morphism UI</b></sub>
+      <sub><b>🔍 Universal Search — Search songs/artists/albums across Piped, Invidious & YouTube</b></sub>
     </td>
     <td align="center" width="50%">
-      <img src="screenshot/img8.jpg" alt="Offline Mode & Queue Management" width="100%"/>
+      <img src="screenshot/img6.jpg" alt="Offline Mode" width="100%"/>
       <br/>
-      <sub><b>📴 Offline Mode & Queue Management</b></sub>
+      <sub><b>📴 Offline Mode — Cache songs with IndexedDB, play without internet</b></sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="screenshot/img7.jpg" alt="Dark and Light Themes" width="100%"/>
+      <br/>
+      <sub><b>🌙☀️ Dark & Light Themes — Glass‑morphism UI with dual theme support</b></sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="screenshot/img8.jpg" alt="Favorites and History" width="100%"/>
+      <br/>
+      <sub><b>❤️ Favorites & History — Save songs & track recent plays, stored locally</b></sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="screenshot/img9.jpg" alt="Queue Management" width="100%"/>
+      <br/>
+      <sub><b>⏯️ Queue Management — Rearrange songs, clear queue, see upcoming tracks</b></sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="screenshot/img10.jpg" alt="PWA Installable" width="100%"/>
+      <br/>
+      <sub><b>📱 PWA Ready — Install on home screen, works offline, background audio</b></sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="screenshot/img11.jpg" alt="Keyboard Shortcuts" width="100%"/>
+      <br/>
+      <sub><b>⌨️ Keyboard Shortcuts — Space (play/pause), arrow keys, M (mute), etc.</b></sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="screenshot/img12.jpg" alt="Privacy Zero Tracking" width="100%"/>
+      <br/>
+      <sub><b>🔒 Zero Tracking — No accounts, no analytics, your data stays local</b></sub>
     </td>
   </tr>
 </table>
-
----
-
-## ✨ Features
-
-<table>
-  <thead>
-    <tr>
-      <th>Feature</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>🔍 <strong>Universal Search</strong></td>
-      <td>Search any song, artist, or album across multiple providers — Piped, Invidious, and YouTube. Smart fallback ensures results are always found.</td>
-    </tr>
-    <tr>
-      <td>📻 <strong>50,000+ Radio Stations</strong></td>
-      <td>Browse and stream live radio from every country on earth, filterable by language, genre, country, and community votes via the Radio Browser API.</td>
-    </tr>
-    <tr>
-      <td>🎤 <strong>40+ Curated Artists</strong></td>
-      <td>One-tap instant access to the biggest Indian music stars — Arijit Singh, Shreya Ghoshal, AP Dhillon, Pawan Singh, Neha Kakkar, Diljit Dosanjh, and many more.</td>
-    </tr>
-    <tr>
-      <td>🎭 <strong>Mood-Based Discovery</strong></td>
-      <td>Romantic, Workout, Chill, Party, Devotional, Bhojpuri, Punjabi, Classical — tap a mood and instantly get a curated playlist to match your vibe.</td>
-    </tr>
-    <tr>
-      <td>📴 <strong>Offline Mode</strong></td>
-      <td>Songs are cached locally using IndexedDB. Once cached, they play perfectly without any internet connection — ideal for travel or poor-signal areas.</td>
-    </tr>
-    <tr>
-      <td>❤️ <strong>Favorites & History</strong></td>
-      <td>Save your favourite songs and tracks with a single tap. Full listening history is stored locally — 100% private, never sent anywhere.</td>
-    </tr>
-    <tr>
-      <td>🔀 <strong>Full Player Controls</strong></td>
-      <td>Shuffle, repeat (None / One / All), queue management, seek bar, volume control, and full keyboard shortcut support for power users.</td>
-    </tr>
-    <tr>
-      <td>🌙 <strong>Dark & Light Mode</strong></td>
-      <td>Beautiful glass-morphism design with smooth dual themes. Automatically respects system preference, with manual override available.</td>
-    </tr>
-    <tr>
-      <td>📱 <strong>PWA Ready</strong></td>
-      <td>Installable on any device home screen — works exactly like a native Android/iOS app. Supports background audio and media session controls.</td>
-    </tr>
-    <tr>
-      <td>🔒 <strong>Zero Tracking</strong></td>
-      <td>Absolutely no accounts, no analytics scripts, no cookies, no data collection. Your music, your privacy — forever.</td>
-    </tr>
-  </tbody>
-</table>
-
 ---
 
 ## 🎯 Built For
