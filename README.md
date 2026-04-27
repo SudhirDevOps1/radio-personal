@@ -411,16 +411,26 @@ Absolutely! Open an issue on GitHub with the tag `[Artist Request]` or `[Station
 
 This project is built collaboratively by:
 
-<a href="https://github.com/SudhirDevOps1">
-  <img src="https://img.shields.io/badge/SudhirDevOps1-181717?style=for-the-badge&logo=github&logoColor=white" alt="SudhirDevOps1">
-</a>
-&nbsp;&nbsp;
-<a href="https://github.com/PrivMITLab">
-  <img src="https://img.shields.io/badge/PrivMITLab-181717?style=for-the-badge&logo=github&logoColor=white" alt="PrivMITLab">
-</a>
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/SudhirDevOps1">
+        <img src="https://github.com/SudhirDevOps1.png" width="100px;" alt="SudhirDevOps1"/>
+        <br />
+        <sub><b>SudhirDevOps1</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/PrivMITLab">
+        <img src="https://github.com/PrivMITLab.png" width="100px;" alt="PrivMITLab"/>
+        <br />
+        <sub><b>PrivMITLab</b></sub>
+      </a>
+    </td>
+  </tr>
+</table>
 
 > **SudhirDevOps1** & **PrivMITLab** — code, design, and privacy-first philosophy.
-
 ---
 
 ## 📄 License
