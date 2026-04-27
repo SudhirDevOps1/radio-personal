@@ -26,73 +26,73 @@
 <table>
   <tr>
     <td align="center" width="50%">
-      <img src="screenshot/img1.jpg" alt="Music Player Interface" width="100%"/>
-      <br/>
+      <img src="screenshot/img1.jpg" alt="Music Player Interface" width="100%">
+      <br>
       <sub><b>🎵 Music Player — Full playback controls, album art, progress bar, shuffle/repeat & favorite toggle</b></sub>
     </td>
     <td align="center" width="50%">
-      <img src="screenshot/img2.jpg" alt="Radio Stations Browser" width="100%"/>
-      <br/>
+      <img src="screenshot/img2.jpg" alt="Radio Stations Browser" width="100%">
+      <br>
       <sub><b>📻 Radio Stations Browser — 50,000+ stations from 200+ countries, filter by language, genre & votes</b></sub>
     </td>
   </tr>
   <tr>
     <td align="center" width="50%">
-      <img src="screenshot/img3.jpg" alt="Curated Artists Collection" width="100%"/>
-      <br/>
+      <img src="screenshot/img3.jpg" alt="Curated Artists Collection" width="100%">
+      <br>
       <sub><b>🎤 Curated Artists — 40+ Indian stars like Arijit Singh, Shreya Goshal, AP Dhillon & more</b></sub>
     </td>
     <td align="center" width="50%">
-      <img src="screenshot/img4.jpg" alt="Mood-Based Discovery" width="100%"/>
-      <br/>
+      <img src="screenshot/img4.jpg" alt="Mood-Based Discovery" width="100%">
+      <br>
       <sub><b>🎭 Mood-Based Discovery — Romantic, Workout, Chill, Party, Devotional, Bhojpuri, Punjabi & more</b></sub>
     </td>
   </tr>
   <tr>
     <td align="center" width="50%">
-      <img src="screenshot/img5.jpg" alt="Universal Search" width="100%"/>
-      <br/>
+      <img src="screenshot/img5.jpg" alt="Universal Search" width="100%">
+      <br>
       <sub><b>🔍 Universal Search — Search songs/artists/albums across Piped, Invidious & YouTube</b></sub>
     </td>
     <td align="center" width="50%">
-      <img src="screenshot/img6.jpg" alt="Offline Mode" width="100%"/>
-      <br/>
-      <sub><b>📴 Offline Mode — Cache songs with IndexedDB, play without internet</b></sub>
+      <img src="screenshot/img6.jpg" alt="Offline Mode" width="100%">
+      <br>
+      <sub><b>📴 Offline Mode — Cache songs with IndexedDB </b></sub>
     </td>
   </tr>
   <tr>
     <td align="center" width="50%">
-      <img src="screenshot/img7.jpg" alt="Dark and Light Themes" width="100%"/>
-      <br/>
+      <img src="screenshot/img7.jpg" alt="Dark and Light Themes" width="100%">
+      <br>
       <sub><b>🌙☀️ Dark & Light Themes — Glass‑morphism UI with dual theme support</b></sub>
     </td>
     <td align="center" width="50%">
-      <img src="screenshot/img8.jpg" alt="Favorites and History" width="100%"/>
-      <br/>
+      <img src="screenshot/img8.jpg" alt="Favorites and History" width="100%">
+      <br>
       <sub><b>❤️ Favorites & History — Save songs & track recent plays, stored locally</b></sub>
     </td>
   </tr>
   <tr>
     <td align="center" width="50%">
-      <img src="screenshot/img9.jpg" alt="Queue Management" width="100%"/>
-      <br/>
+      <img src="screenshot/img10.jpg" alt="Queue Management" width="100%">
+      <br>
       <sub><b>⏯️ Queue Management — Rearrange songs, clear queue, see upcoming tracks</b></sub>
     </td>
     <td align="center" width="50%">
-      <img src="screenshot/img10.jpg" alt="PWA Installable" width="100%"/>
-      <br/>
+      <img src="screenshot/img9.jpg" alt="Setting Api key" width="100%">
+      <br>
       <sub><b>📱 PWA Ready — Install on home screen, works offline, background audio</b></sub>
     </td>
   </tr>
   <tr>
     <td align="center" width="50%">
-      <img src="screenshot/img11.jpg" alt="Keyboard Shortcuts" width="100%"/>
-      <br/>
-      <sub><b>⌨️ Keyboard Shortcuts — Space (play/pause), arrow keys, M (mute), etc.</b></sub>
+      <img src="screenshot/img11.jpg" alt="Keyboard Shortcuts" width="100%">
+      <br>
+      <sub><b>floting window, etc.</b></sub>
     </td>
     <td align="center" width="50%">
-      <img src="screenshot/img12.jpg" alt="Privacy Zero Tracking" width="100%"/>
-      <br/>
+      <img src="screenshot/img12.jpg" alt="floating window mobile view" width="100%">
+      <br>
       <sub><b>🔒 Zero Tracking — No accounts, no analytics, your data stays local</b></sub>
     </td>
   </tr>
