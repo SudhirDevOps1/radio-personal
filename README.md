@@ -97,6 +97,7 @@
     </td>
   </tr>
 </table>
+
 ---
 
 ## 🎯 Built For
@@ -115,41 +116,14 @@
 
 A curated selection of 40+ Indian music superstars available with one tap:
 
-<table>
-  <tr>
-    <td>🎵 Arijit Singh</td>
-    <td>🎵 Shreya Ghoshal</td>
-    <td>🎵 AP Dhillon</td>
-    <td>🎵 Pawan Singh</td>
-  </tr>
-  <tr>
-    <td>🎵 Neha Kakkar</td>
-    <td>🎵 Diljit Dosanjh</td>
-    <td>🎵 Atif Aslam</td>
-    <td>🎵 Jubin Nautiyal</td>
-  </tr>
-  <tr>
-    <td>🎵 Sonu Nigam</td>
-    <td>🎵 Lata Mangeshkar</td>
-    <td>🎵 Kumar Sanu</td>
-    <td>🎵 Udit Narayan</td>
-  </tr>
-  <tr>
-    <td>🎵 Khesari Lal Yadav</td>
-    <td>🎵 Ritesh Pandey</td>
-    <td>🎵 Nicki Minaj</td>
-    <td>🎵 Guru Randhawa</td>
-  </tr>
-  <tr>
-    <td>🎵 Badshah</td>
-    <td>🎵 Yo Yo Honey Singh</td>
-    <td>🎵 Vishal Mishra</td>
-    <td>🎵 Armaan Malik</td>
-  </tr>
-  <tr>
-    <td colspan="4" align="center"><em>…and 20+ more artists across Bollywood, Bhojpuri, Punjabi, and Classical genres</em></td>
-  </tr>
-</table>
+| 🎵 Arijit Singh | 🎵 Shreya Ghoshal | 🎵 AP Dhillon | 🎵 Pawan Singh |
+|---|---|---|---|
+| 🎵 Neha Kakkar | 🎵 Diljit Dosanjh | 🎵 Atif Aslam | 🎵 Jubin Nautiyal |
+| 🎵 Sonu Nigam | 🎵 Lata Mangeshkar | 🎵 Kumar Sanu | 🎵 Udit Narayan |
+| 🎵 Khesari Lal Yadav | 🎵 Ritesh Pandey | 🎵 Nicki Minaj | 🎵 Guru Randhawa |
+| 🎵 Badshah | 🎵 Yo Yo Honey Singh | 🎵 Vishal Mishra | 🎵 Armaan Malik |
+
+<em>…and 20+ more artists across Bollywood, Bhojpuri, Punjabi, and Classical genres</em>
 
 ---
 
@@ -433,12 +407,27 @@ Absolutely! Open an issue on GitHub with the tag `[Artist Request]` or `[Station
 
 ---
 
+## 👥 Developers
+
+This project is built collaboratively by:
+
+<a href="https://github.com/SudhirDevOps1">
+  <img src="https://img.shields.io/badge/SudhirDevOps1-181717?style=for-the-badge&logo=github&logoColor=white" alt="SudhirDevOps1">
+</a>
+&nbsp;&nbsp;
+<a href="https://github.com/PrivMITLab">
+  <img src="https://img.shields.io/badge/PrivMITLab-181717?style=for-the-badge&logo=github&logoColor=white" alt="PrivMITLab">
+</a>
+
+> **SudhirDevOps1** & **PrivMITLab** — code, design, and privacy-first philosophy.
+
+---
+
 ## 📄 License
 
-```
 MIT License
 
-Copyright (c) 2024 PrivMITLab
+Copyright (c) 2026 SudhirDevOps1 & PrivMITLab
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -453,7 +442,8 @@ copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-```
+
+
 
 ---
 
